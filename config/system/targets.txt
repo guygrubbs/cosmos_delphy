@@ -67,6 +67,9 @@ TELEMETRY_PACKET METADATA
   FIELDS:
     - SYSTEM_STATE STRING
     - ERROR_COUNT UINT8
+    - PROPERTY_MINIMUM FLOAT
+    - PROPERTY_MAXIMUM FLOAT
+    - METADATA_PROPERTY_RANGES STRING
 
 # --------------------------------------------
 # COMMAND DEFINITIONS
@@ -157,7 +160,7 @@ ALERTS_ENABLED: TRUE
 ALERT_LEVELS: ERROR, CRITICAL
 ALERT_NOTIFICATION_CHANNELS: EMAIL, CONSOLE
 ALERT_EMAIL_RECIPIENTS: kolton.dieckow@swri.org, guygrubbs@gmail.com
-ALERT_ESCALATION_RECIPIENTS: kolton.dieckow@swri.org, guygrubbs@gmail.com
+ALERT_ESCALATION_RECIPIENTS: kolton.dieckow@swri.org
 ALERT_EMAIL_SUBJECT: "DELPHY Target Alert"
 ALERT_EMAIL_TEMPLATE: config/tools/delphy_tool/templates/alert_email_template.txt
 
@@ -187,4 +190,4 @@ SYSTEM_METADATA:
   VERSION: "1.0.0"
   LAST_UPDATE: "2024-12-30"
   MAINTAINER: "DELPHY Operations Team"
-  SUPPORT_CONTACT: "kolton.dieckow@swri.org"
+  SUPPORT_CONTACT: "guygrubbs@gmail.com"
