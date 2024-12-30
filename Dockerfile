@@ -1,13 +1,14 @@
-# Dockerfile for COSMOS CI/CD Environment with Modern Dependencies
+# Dockerfile for COSMOS Deployment with Flexible Dependency Management
 
+# Use the latest LTS Ubuntu version
 FROM ubuntu:22.04
 
-# Set Environment Variables
+# Set environment variables
 ENV DEBIAN_FRONTEND=noninteractive
-ENV RUBY_VERSION=2.7.8
-ENV BUNDLER_VERSION=1.17.3
+ENV LANG=C.UTF-8
+ENV LC_ALL=C.UTF-8
 
-# Install System Dependencies
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     build-essential \
     cmake \
@@ -32,25 +33,23 @@ RUN apt-get update && apt-get install -y \
     libxcb-glx0-dev \
     && apt-get clean
 
-# Install Specific Ruby Version and Bundler
-RUN gem install bundler -v $BUNDLER_VERSION
-RUN gem install rspec
+# Verify system dependencies
+RUN ruby -v && bundler -v && cmake --version && qmake --version
 
-# Ensure Ruby version matches
-RUN update-alternatives --install /usr/bin/ruby ruby /usr/bin/ruby2.7 1
-RUN ruby -v && bundler -v && rspec --version
-
-# Set Working Directory
+# Set working directory
 WORKDIR /app
 
-# Copy Project Files
+# Copy application files
 COPY . /app
 
-# Install Ruby Dependencies
-RUN bundle _${BUNDLER_VERSION}_ install --jobs=4 --retry=3
+# Install Ruby gems using Bundler
+RUN bundle install --jobs=4 --retry=3
 
-# Validate Installation
-RUN ruby -v && bundler -v && cmake --version && qmake --version && rspec --version
+# Validate installation
+RUN ruby -v && bundler -v && rspec --version
 
-# Define Default Command
+# Expose any necessary ports (if applicable)
+EXPOSE 8080
+
+# Default command
 CMD ["/bin/bash"]

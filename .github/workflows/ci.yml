@@ -1,3 +1,5 @@
+# CI/CD Pipeline for COSMOS Deployment
+
 name: COSMOS CI/CD Pipeline
 
 on:
@@ -31,7 +33,7 @@ jobs:
       - name: Verify Docker Image
         run: |
           docker pull ghcr.io/guygrubbs/cosmos_delphy:latest
-          docker run --rm ghcr.io/guygrubbs/cosmos_delphy:latest echo "Docker Image Successfully Built and Pushed"
+          docker run --rm ghcr.io/guygrubbs/cosmos_delphy:latest echo "✅ Docker Image Built Successfully"
 
   setup:
     name: Environment Setup
@@ -41,49 +43,48 @@ jobs:
       image: ghcr.io/guygrubbs/cosmos_delphy:latest
 
     steps:
-      - name: Validate Environment
+      - name: Verify Tools
         run: |
           ruby -v
           bundler -v
-          rspec --version
           cmake --version
           qmake --version
 
       - name: Install Ruby Dependencies
         run: |
-          bundle _1.17.3_ install --jobs=4 --retry=3
+          bundle install --jobs=4 --retry=3
 
   lint:
-    name: Code Linting
+    name: Lint Code
     runs-on: ubuntu-latest
     needs: setup
     container:
       image: ghcr.io/guygrubbs/cosmos_delphy:latest
 
     steps:
-      - name: Run RuboCop
+      - name: Run Linter
         run: bundle exec rubocop
 
   unit_tests:
-    name: Unit Tests
+    name: Run Unit Tests
     runs-on: ubuntu-latest
     needs: setup
     container:
       image: ghcr.io/guygrubbs/cosmos_delphy:latest
 
     steps:
-      - name: Run Unit Tests
+      - name: Execute Unit Tests
         run: bundle exec rspec tests/targets/DELPHY --format documentation
 
   integration_tests:
-    name: Integration Tests
+    name: Run Integration Tests
     runs-on: ubuntu-latest
     needs: setup
     container:
       image: ghcr.io/guygrubbs/cosmos_delphy:latest
 
     steps:
-      - name: Run Integration Tests
+      - name: Execute Integration Tests
         run: bundle exec rspec tests/targets/DELPHY/integration_test.rb --format documentation
 
   deployment:
@@ -95,12 +96,12 @@ jobs:
     if: github.ref == 'refs/heads/main'
 
     steps:
-      - name: Run Deployment Script
+      - name: Execute Deployment Script
         run: |
           chmod +x deploy.sh
           ./deploy.sh
 
-      - name: Validate Deployment Logs
+      - name: Validate Logs
         run: tail -n 50 /app/config/targets/DELPHY/tools/logs/*.log
 
   finalize:
@@ -110,4 +111,4 @@ jobs:
 
     steps:
       - name: Deployment Success
-        run: echo "✅ Deployment Successful!"
+        run: echo "✅ Deployment Completed Successfully"
