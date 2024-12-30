@@ -26,9 +26,18 @@ RUN apt-get update && apt-get install -y \
     libxcb-glx0-dev \
     && apt-get clean
 
-# Install Ruby Gems
-RUN gem install bundler -v 1.17.3
-RUN gem install rspec
+# Install specific Ruby version (2.7.8)
+RUN apt-get update && \
+    apt-get install -y software-properties-common && \
+    add-apt-repository ppa:brightbox/ruby-ng && \
+    apt-get update && \
+    apt-get install -y ruby2.7 ruby2.7-dev && \
+    gem install bundler -v 1.17.3 && \
+    gem install rspec
+
+# Set Ruby 2.7.8 as default
+RUN update-alternatives --install /usr/bin/ruby ruby /usr/bin/ruby2.7 1
+RUN ruby -v
 
 # Set working directory
 WORKDIR /app
@@ -36,10 +45,10 @@ WORKDIR /app
 # Copy project files
 COPY . /app
 
-# Install Ruby dependencies
-RUN bundle _1.17.3_ install
+# Install Ruby dependencies with Bundler
+RUN bundle _1.17.3_ install --jobs=4 --retry=3
 
 # Validate installation
-RUN ruby -v && bundler -v && cmake --version && qmake --version
+RUN ruby -v && bundler -v && cmake --version && qmake --version && rspec --version
 
 CMD ["/bin/bash"]
