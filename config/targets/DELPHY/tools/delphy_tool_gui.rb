@@ -1,177 +1,166 @@
-# config/tools/delphy_tool_gui.rb
-# DELPHY Tool GUI for COSMOS v4 Deployment
-# Provides a GUI interface for DELPHY operations using Tk toolkit
+#!/usr/bin/env ruby
+# config/targets/DELPHY/tools/delphy_tool_gui.rb
+# DELPHY Graphical User Interface for Monitoring and Controlling DELPHY System
 
-require 'tk'
-require_relative '../../lib/delphy_tool'
+require 'cosmos'
+require 'cosmos/gui/qt_tool'
+require 'cosmos/script'
+require_relative 'delphy_tool_logger'
 require_relative '../../lib/delphy_constants'
-require_relative '../../lib/delphy_errors'
 require_relative '../../lib/delphy_helper'
-require_relative '../../config/tools/delphy_tool_logger'
+require_relative 'configs/tool_config'
 
 # --------------------------------------------
-# DELPHY Tool GUI Class
+# DELPHY GUI Tool Class
 # --------------------------------------------
-class DelphyToolGUI
+class DelphyToolGUI < Cosmos::QtTool
   include DelphyConstants
+  include DelphyHelper
 
   def initialize
-    @tool = DelphyTool.new
-    @logger = DelphyToolLogger.new
+    super()
+    @logger = DelphyToolLogger.new('config/targets/DELPHY/tools/logs/delphy_gui.log', 'INFO')
+    @logger.info('DELPHY GUI Tool Initialized')
 
-    setup_gui
-    Cosmos::Logger.info('[DELPHY_GUI] DELPHY Tool GUI Initialized')
+    setup_ui
+    setup_signals
   end
 
   # --------------------------------------------
-  # GUI SETUP
+  # GUI Setup
   # --------------------------------------------
-  def setup_gui
-    @root = TkRoot.new { title 'DELPHY Tool GUI' }
-    @root.geometry('800x600')
+  def setup_ui
+    setWindowTitle('DELPHY GUI Tool')
+    resize(600, 400)
 
-    # Status Frame
-    status_frame = TkFrame.new(@root) { relief 'groove'; borderwidth 2 }.pack(fill: 'x')
-    TkLabel.new(status_frame, text: 'DELPHY Tool Status:', font: 'Arial 12 bold').pack(side: 'left', padx: 5)
-    @status_label = TkLabel.new(status_frame, text: 'Disconnected', fg: 'red').pack(side: 'left', padx: 5)
+    @connect_button = Qt::PushButton.new('Connect')
+    @disconnect_button = Qt::PushButton.new('Disconnect')
+    @run_script_button = Qt::PushButton.new('Run Script')
+    @monitor_button = Qt::PushButton.new('Monitor Telemetry')
+    @reset_button = Qt::PushButton.new('Reset System')
+    @diagnostics_button = Qt::PushButton.new('Run Diagnostics')
+    @exit_button = Qt::PushButton.new('Exit')
 
-    # Command Frame
-    command_frame = TkFrame.new(@root) { relief 'groove'; borderwidth 2 }.pack(fill: 'x')
-    TkLabel.new(command_frame, text: 'Commands:', font: 'Arial 12 bold').pack(anchor: 'w', padx: 5)
+    @log_area = Qt::TextEdit.new
+    @log_area.readOnly = true
 
-    TkButton.new(command_frame, text: 'Connect', command: proc { connect }) \
-      .pack(side: 'left', padx: 5, pady: 5)
-    TkButton.new(command_frame, text: 'Disconnect', command: proc { disconnect }) \
-      .pack(side: 'left', padx: 5, pady: 5)
-    TkButton.new(command_frame, text: 'Run Script', command: proc { run_script }) \
-      .pack(side: 'left', padx: 5, pady: 5)
-    TkButton.new(command_frame, text: 'Send Message', command: proc { send_message }) \
-      .pack(side: 'left', padx: 5, pady: 5)
-    TkButton.new(command_frame, text: 'Reset System', command: proc { reset_system }) \
-      .pack(side: 'left', padx: 5, pady: 5)
+    layout = Qt::VBoxLayout.new
+    layout.addWidget(@connect_button)
+    layout.addWidget(@disconnect_button)
+    layout.addWidget(@run_script_button)
+    layout.addWidget(@monitor_button)
+    layout.addWidget(@reset_button)
+    layout.addWidget(@diagnostics_button)
+    layout.addWidget(@log_area)
+    layout.addWidget(@exit_button)
 
-    # Telemetry Frame
-    telemetry_frame = TkFrame.new(@root) { relief 'groove'; borderwidth 2 }.pack(fill: 'both', expand: true)
-    TkLabel.new(telemetry_frame, text: 'Telemetry:', font: 'Arial 12 bold').pack(anchor: 'w', padx: 5)
-
-    @telemetry_text = TkText.new(telemetry_frame, height: 15, wrap: 'word')
-    @telemetry_text.pack(fill: 'both', expand: true, padx: 5, pady: 5)
-
-    # Footer Frame
-    footer_frame = TkFrame.new(@root) { relief 'groove'; borderwidth 2 }.pack(fill: 'x')
-    TkButton.new(footer_frame, text: 'Exit', command: proc { exit_program }) \
-      .pack(side: 'right', padx: 5, pady: 5)
-
-    Tk.mainloop
+    setLayout(layout)
   end
 
   # --------------------------------------------
-  # GUI EVENT HANDLERS
+  # Signal Handlers
   # --------------------------------------------
-
-  def update_status(message, color = 'green')
-    @status_label.text = message
-    @status_label.fg = color
+  def setup_signals
+    connect(@connect_button, SIGNAL('clicked()')) { handle_connect }
+    connect(@disconnect_button, SIGNAL('clicked()')) { handle_disconnect }
+    connect(@run_script_button, SIGNAL('clicked()')) { handle_run_script }
+    connect(@monitor_button, SIGNAL('clicked()')) { handle_monitor_telemetry }
+    connect(@reset_button, SIGNAL('clicked()')) { handle_reset_system }
+    connect(@diagnostics_button, SIGNAL('clicked()')) { handle_diagnostics }
+    connect(@exit_button, SIGNAL('clicked()')) { handle_exit }
   end
 
-  def append_telemetry(message)
-    @telemetry_text.insert('end', "#{message}\n")
-    @telemetry_text.see('end')
-  end
-
   # --------------------------------------------
-  # COMMAND METHODS
+  # Button Handlers
   # --------------------------------------------
-
-  def connect
+  def handle_connect
+    @logger.info('Attempting to connect via GUI...')
     begin
-      @tool.connect
-      update_status('Connected', 'green')
-      @logger.log_info('Successfully connected to DELPHY interface')
-    rescue DelphyError => e
-      update_status('Connection Failed', 'red')
-      @logger.log_error(e.message)
+      cmd('DELPHY', 'CONNECT')
+      @log_area.append('Connected to DELPHY successfully.')
+      @logger.info('Connected successfully.')
+    rescue StandardError => e
+      @log_area.append("Connection failed: #{e.message}")
+      @logger.error("Connection failed: #{e.message}", e)
     end
   end
 
-  def disconnect
+  def handle_disconnect
+    @logger.info('Attempting to disconnect via GUI...')
     begin
-      @tool.disconnect
-      update_status('Disconnected', 'red')
-      @logger.log_info('Successfully disconnected from DELPHY interface')
-    rescue DelphyError => e
-      update_status('Disconnection Failed', 'red')
-      @logger.log_error(e.message)
+      cmd('DELPHY', 'DISCONNECT')
+      @log_area.append('Disconnected from DELPHY successfully.')
+      @logger.info('Disconnected successfully.')
+    rescue StandardError => e
+      @log_area.append("Disconnection failed: #{e.message}")
+      @logger.error("Disconnection failed: #{e.message}", e)
     end
   end
 
-  def run_script
-    script_id = Tk.getOpenFile(title: 'Select Script ID', filetypes: [['Script ID', '.txt']])
-    parameter = Tk.getOpenFile(title: 'Enter Parameter', filetypes: [['Parameter', '.txt']])
-
-    if script_id.empty? || parameter.empty?
-      @logger.log_warning('Script ID or Parameter not provided')
-      return
-    end
-
+  def handle_run_script
+    script_id = Qt::InputDialog.getInt(self, 'Script ID', 'Enter Script ID:')
+    parameter = Qt::InputDialog.getDouble(self, 'Parameter', 'Enter Parameter:')
+    @logger.info("Running script with ID=#{script_id}, Parameter=#{parameter}")
     begin
-      @tool.run_script(script_id.to_i, parameter.to_f)
-      append_telemetry("Script #{script_id} executed with parameter #{parameter}")
-      @logger.log_info("Executed script with ID=#{script_id}, PARAMETER=#{parameter}")
-    rescue DelphyError => e
-      append_telemetry("Script execution failed: #{e.message}")
-      @logger.log_error(e.message)
+      cmd('DELPHY', 'RUN_SCRIPT', 'SCRIPT_ID' => script_id, 'PARAMETER' => parameter)
+      @log_area.append("Script #{script_id} executed successfully with parameter #{parameter}.")
+      @logger.info("Script executed successfully.")
+    rescue StandardError => e
+      @log_area.append("Script execution failed: #{e.message}")
+      @logger.error("Script execution failed: #{e.message}", e)
     end
   end
 
-  def send_message
-    message = Tk.getOpenFile(title: 'Enter Message', filetypes: [['Message', '.txt']])
-    if message.empty?
-      @logger.log_warning('Message not provided')
-      return
-    end
-
+  def handle_monitor_telemetry
+    @logger.info('Monitoring telemetry via GUI...')
     begin
-      @tool.send_message(0, message)
-      append_telemetry("Message sent: #{message}")
-      @logger.log_info("Sent message: #{message}")
-    rescue DelphyError => e
-      append_telemetry("Message failed: #{e.message}")
-      @logger.log_error(e.message)
+      wait_check('DELPHY METADATA SYSTEM_STATE == "NOMINAL"', 10)
+      @log_area.append('Telemetry monitoring successful: SYSTEM_STATE is NOMINAL.')
+      @logger.info('Telemetry monitoring successful.')
+    rescue StandardError => e
+      @log_area.append("Telemetry monitoring failed: #{e.message}")
+      @logger.error("Telemetry monitoring failed: #{e.message}", e)
     end
   end
 
-  def reset_system
-    reason = Tk.getOpenFile(title: 'Enter Reset Reason', filetypes: [['Reason', '.txt']])
-    if reason.empty?
-      @logger.log_warning('Reset reason not provided')
-      return
-    end
-
+  def handle_reset_system
+    reset_mode = Qt::InputDialog.getInt(self, 'Reset Mode', 'Enter Reset Mode:')
+    reset_reason = Qt::InputDialog.getText(self, 'Reset Reason', 'Enter Reset Reason:')
+    @logger.info("Resetting system with Mode=#{reset_mode}, Reason=#{reset_reason}")
     begin
-      @tool.reset_system(0, reason)
-      append_telemetry("System reset: #{reason}")
-      @logger.log_info("System reset: #{reason}")
-    rescue DelphyError => e
-      append_telemetry("System reset failed: #{e.message}")
-      @logger.log_error(e.message)
+      cmd('DELPHY', 'RESET_SYSTEM', 'MODE' => reset_mode, 'REASON' => reset_reason)
+      @log_area.append('System reset successfully.')
+      @logger.info('System reset successfully.')
+    rescue StandardError => e
+      @log_area.append("System reset failed: #{e.message}")
+      @logger.error("System reset failed: #{e.message}", e)
     end
   end
 
-  def exit_program
-    @tool.disconnect
-    @logger.close_logger
-    Tk.exit
+  def handle_diagnostics
+    @logger.info('Running diagnostics via GUI...')
+    begin
+      cmd('DELPHY', 'RUN_DIAGNOSTICS')
+      @log_area.append('Diagnostics completed successfully.')
+      @logger.info('Diagnostics completed successfully.')
+    rescue StandardError => e
+      @log_area.append("Diagnostics failed: #{e.message}")
+      @logger.error("Diagnostics failed: #{e.message}", e)
+    end
+  end
+
+  def handle_exit
+    @logger.info('Exiting GUI...')
+    close
   end
 end
 
 # --------------------------------------------
-# MAIN GUI LAUNCHER
+# MAIN GUI EXECUTION
 # --------------------------------------------
 if __FILE__ == $PROGRAM_NAME
-  begin
-    DelphyToolGUI.new
-  rescue StandardError => e
-    puts "[DELPHY_GUI] GUI Launch Failed: #{e.message}"
-  end
+  app = Qt::Application.new(ARGV)
+  gui = DelphyToolGUI.new
+  gui.show
+  app.exec
 end

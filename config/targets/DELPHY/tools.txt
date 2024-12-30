@@ -1,0 +1,16 @@
+# config/targets/DELPHY/tools.txt
+
+# DELPHY Target-Specific Tools
+# This file defines tools exclusive to the DELPHY target.
+
+TOOL delphy_script.rb
+DESCRIPTION "Primary automation and scripting tool for DELPHY."
+
+TOOL delphy_tool_gui.rb
+DESCRIPTION "Graphical User Interface for monitoring and controlling DELPHY."
+
+TOOL delphy_tool_logger.rb
+DESCRIPTION "Logging tool for DELPHY target telemetry and diagnostics."
+
+TOOL delphy_tool_test.rb
+DESCRIPTION "Test suite for DELPHY system validation."
