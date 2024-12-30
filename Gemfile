@@ -1,5 +1,5 @@
 # Gemfile for DELPHY COSMOS v4 Deployment
-# Defines dependencies for DELPHY tools, aligned with COSMOS v4 requirements.
+# Ensures compatibility with COSMOS v4 and Ruby 2.7.x
 
 source 'https://rubygems.org'
 
@@ -36,6 +36,12 @@ gem 'fileutils', '~> 1.7'  # File and directory manipulation utilities
 gem 'highline', '~> 2.0'   # Command-line interface enhancements
 
 # --------------------------------------------
-# Ruby Version Compatibility
+# Compatibility Specifications
 # --------------------------------------------
+# Specify the compatible Ruby version
 ruby '2.7.8'
+
+# --------------------------------------------
+# Clean-up
+# --------------------------------------------
+# Removed any outdated or unnecessary dependencies

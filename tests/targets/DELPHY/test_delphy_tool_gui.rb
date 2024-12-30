@@ -6,7 +6,7 @@ RSpec.describe DelphyToolGUI do
     @gui = DelphyToolGUI.new
   end
 
-  it 'initializes the GUI successfully' do
+  it 'initializes GUI successfully' do
     expect { @gui.setup_ui }.not_to raise_error
     @logger.log_info('GUI initialization test passed')
   end
