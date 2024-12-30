@@ -12,7 +12,10 @@ RUN apt-get update && apt-get install -y \
     build-essential \
     cmake \
     pkg-config \
-    qt5-default \
+    qtbase5-dev \
+    qtchooser \
+    qt5-qmake \
+    qtbase5-dev-tools \
     libqt5widgets5 \
     ruby-full \
     ruby-dev \
@@ -27,14 +30,13 @@ RUN apt-get update && apt-get install -y \
     libxrender-dev \
     libxcb1-dev \
     libxcb-glx0-dev \
-    rspec \
     && apt-get clean
 
 # Install Specific Ruby Version and Bundler
 RUN gem install bundler -v $BUNDLER_VERSION
 RUN gem install rspec
 
-# Set Ruby Alternatives to Ensure Compatibility
+# Ensure Ruby version matches
 RUN update-alternatives --install /usr/bin/ruby ruby /usr/bin/ruby2.7 1
 RUN ruby -v && bundler -v && rspec --version
 
