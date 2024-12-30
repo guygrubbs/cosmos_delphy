@@ -1,5 +1,5 @@
 # .github/workflows/ci.yml
-# DELPHY CI/CD Pipeline Configuration
+# DELPHY CI/CD Pipeline with Docker Build on GitHub Actions
 
 name: DELPHY CI/CD Pipeline
 
@@ -12,46 +12,35 @@ on:
       - main
 
 jobs:
-  setup:
-    name: Environment Setup
+  docker_build:
+    name: Build and Push Docker Image
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Install Build Tools and Dependencies
+      - name: Authenticate with GitHub Container Registry
+        run: echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Build and Push Docker Image
         run: |
-          sudo apt-get update
-          sudo apt-get install -y build-essential cmake pkg-config libfontconfig1-dev libfreetype6-dev \
-          libx11-dev libxext-dev libxfixes-dev libxrender-dev libxcb1-dev libxcb-glx0-dev libglib2.0-dev
+          docker build -t ghcr.io/guygrubbs/cosmos_delphy:latest .
+          docker push ghcr.io/guygrubbs/cosmos_delphy:latest
 
-      - name: Build Qt4 from Source
+      - name: Verify Docker Image
         run: |
-          wget https://download.qt.io/archive/qt/4.8/4.8.7/qt-everywhere-opensource-src-4.8.7.tar.gz
-          tar -xvf qt-everywhere-opensource-src-4.8.7.tar.gz
-          cd qt-everywhere-opensource-src-4.8.7
-          ./configure -opensource -confirm-license -prefix /usr/local/qt4
-          make -j$(nproc)
-          sudo make install
-          echo 'export PATH=/usr/local/qt4/bin:$PATH' >> ~/.bashrc
-          source ~/.bashrc
-          qmake --version
+          docker pull ghcr.io/guygrubbs/cosmos_delphy:latest
+          docker run --rm ghcr.io/guygrubbs/cosmos_delphy:latest echo "Docker Image Successfully Built and Pushed"
 
-      - name: Install Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '2.7'
-          bundler-cache: true
+  setup:
+    name: Environment Setup
+    runs-on: ubuntu-latest
+    needs: docker_build
+    container:
+      image: ghcr.io/guygrubbs/cosmos_delphy:latest
 
-      - name: Install Bundler
-        run: |
-          gem install bundler -v 1.17.3
-
-      - name: Clean Build Environment
-        run: |
-          sudo rm -rf vendor/bundle/ruby/2.7.0/gems/qtbindings-4.8.6.5/ext/build
-
+    steps:
       - name: Install Dependencies
         run: |
           bundle _1.17.3_ install
@@ -67,11 +56,10 @@ jobs:
     name: Code Linting
     runs-on: ubuntu-latest
     needs: setup
+    container:
+      image: ghcr.io/guygrubbs/cosmos_delphy:latest
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
-
       - name: Run RuboCop
         run: |
           bundle exec rubocop
@@ -80,11 +68,10 @@ jobs:
     name: Unit Tests
     runs-on: ubuntu-latest
     needs: setup
+    container:
+      image: ghcr.io/guygrubbs/cosmos_delphy:latest
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
-
       - name: Run Unit Tests
         run: |
           bundle exec rspec tests/targets/DELPHY --format documentation
@@ -93,11 +80,10 @@ jobs:
     name: Integration Tests
     runs-on: ubuntu-latest
     needs: setup
+    container:
+      image: ghcr.io/guygrubbs/cosmos_delphy:latest
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
-
       - name: Run Integration Tests
         run: |
           bundle exec rspec tests/targets/DELPHY/integration_test.rb --format documentation
@@ -106,16 +92,15 @@ jobs:
     name: Deployment
     runs-on: ubuntu-latest
     needs: [lint, unit_tests, integration_tests]
+    container:
+      image: ghcr.io/guygrubbs/cosmos_delphy:latest
     if: github.ref == 'refs/heads/main'
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
-
       - name: Run Deployment Script
         run: |
           chmod +x deploy.sh
-          sudo ./deploy.sh
+          ./deploy.sh
 
       - name: Validate Deployment Logs
         run: |
