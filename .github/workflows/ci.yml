@@ -14,14 +14,16 @@ on:
 jobs:
   setup:
     name: Environment Setup
-    runs-on: ubuntu-20.04  # Use Ubuntu 20.04 for Qt4 compatibility
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Install Required Dependencies
+      - name: Add Qt4 Repository
         run: |
+          echo "Adding Qt4 repository from Ubuntu 20.04 (Focal)"
+          sudo add-apt-repository "deb http://archive.ubuntu.com/ubuntu focal main universe"
           sudo apt-get update
           sudo apt-get install -y libqt4-dev cmake build-essential pkg-config
 
@@ -52,7 +54,7 @@ jobs:
 
   lint:
     name: Code Linting
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     needs: setup
 
     steps:
@@ -65,7 +67,7 @@ jobs:
 
   unit_tests:
     name: Unit Tests
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     needs: setup
 
     steps:
@@ -78,7 +80,7 @@ jobs:
 
   integration_tests:
     name: Integration Tests
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     needs: setup
 
     steps:
@@ -91,7 +93,7 @@ jobs:
 
   deployment:
     name: Deployment
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     needs: [lint, unit_tests, integration_tests]
     if: github.ref == 'refs/heads/main'
 
@@ -110,7 +112,7 @@ jobs:
 
   finalize:
     name: Finalization
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     needs: deployment
 
     steps:
