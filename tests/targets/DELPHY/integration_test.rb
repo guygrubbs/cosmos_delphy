@@ -1,53 +1,89 @@
-#!/usr/bin/env ruby
 # tests/targets/DELPHY/integration_test.rb
+# DELPHY Integration Test Suite for COSMOS Environment
+
+require 'rspec'
 require 'cosmos'
 require_relative '../../../config/targets/DELPHY/tools/delphy_script'
-require_relative '../../../config/targets/DELPHY/tools/delphy_tool_test'
 require_relative '../../../config/targets/DELPHY/tools/delphy_tool_logger'
+require_relative '../../../config/targets/DELPHY/tools/delphy_tool_test'
+require_relative '../../../lib/delphy_constants'
+require_relative '../../../lib/delphy_helper'
 
-# Integration Test Suite for DELPHY Tools
-class DelphyIntegrationTest
-  def initialize
+RSpec.describe 'DELPHY Integration Tests' do
+  before(:all) do
+    @logger = DelphyToolLogger.new('config/targets/DELPHY/tools/logs/integration_test.log', 'DEBUG')
     @script = DelphyScript.new
     @test = DelphyToolTest.new
-    @logger = DelphyToolLogger.new('config/targets/DELPHY/tools/logs/integration_test.log', 'DEBUG')
-    @logger.log_info('DELPHY Integration Test Initialized')
+    @logger.log_info('Integration tests initialized.')
   end
 
-  def test_connection
-    @logger.log_info('Testing connection...')
+  after(:all) do
+    @script.disconnect
+    @logger.log_info('Integration tests completed.')
+    @logger.close_logger
+  end
+
+  # --------------------------------------------
+  # 1. CONNECTION AND DISCONNECTION
+  # --------------------------------------------
+  it 'establishes and disconnects a connection successfully' do
+    expect { @script.connect }.not_to raise_error
+    @logger.log_info('Connection established successfully.')
+    expect { @script.disconnect }.not_to raise_error
+    @logger.log_info('Connection disconnected successfully.')
+  end
+
+  # --------------------------------------------
+  # 2. COMMAND EXECUTION
+  # --------------------------------------------
+  it 'executes RUN_SCRIPT command successfully' do
     @script.connect
+    expect { @script.run_script(1, 123.45) }.not_to raise_error
+    @logger.log_info('RUN_SCRIPT command executed successfully.')
     @script.disconnect
   end
 
-  def test_command_execution
-    @logger.log_info('Testing command execution...')
-    @script.run_script(1, 123.45)
-    @script.reset_system(0, 'Integration Test Reset')
+  it 'executes RESET_SYSTEM command successfully' do
+    @script.connect
+    expect { @script.reset_system(0, 'Integration Test Reset') }.not_to raise_error
+    @logger.log_info('RESET_SYSTEM command executed successfully.')
+    @script.disconnect
   end
 
-  def test_telemetry
-    @logger.log_info('Testing telemetry monitoring...')
-    @test.test_telemetry_ack
-    @test.test_telemetry_complete
+  # --------------------------------------------
+  # 3. TELEMETRY MONITORING
+  # --------------------------------------------
+  it 'receives ACK telemetry successfully' do
+    @script.connect
+    telemetry = @script.monitor_telemetry(:ack, 10)
+    expect(telemetry[:response_code]).to eq(0)
+    @logger.log_info('ACK telemetry received and validated successfully.')
+    @script.disconnect
   end
 
-  def test_workflow
-    @logger.log_info('Testing full workflow...')
-    @script.execute_full_workflow(1, 123.45)
+  it 'receives COMPLETE telemetry successfully' do
+    @script.connect
+    telemetry = @script.monitor_telemetry(:complete, 10)
+    expect(telemetry[:status_code]).to eq(0)
+    @logger.log_info('COMPLETE telemetry received and validated successfully.')
+    @script.disconnect
   end
 
-  def run_all
-    test_connection
-    test_command_execution
-    test_telemetry
-    test_workflow
-    @logger.log_info('All integration tests completed successfully')
+  # --------------------------------------------
+  # 4. WORKFLOW VALIDATION
+  # --------------------------------------------
+  it 'executes a full workflow successfully' do
+    expect { @script.execute_full_workflow(1, 123.45) }.not_to raise_error
+    @logger.log_info('Full workflow executed successfully.')
   end
-end
 
-# Run Integration Tests
-if __FILE__ == $PROGRAM_NAME
-  test_suite = DelphyIntegrationTest.new
-  test_suite.run_all
+  # --------------------------------------------
+  # 5. ERROR HANDLING VALIDATION
+  # --------------------------------------------
+  it 'handles invalid command gracefully' do
+    @script.connect
+    expect { @script.run_script(nil, nil) }.to raise_error(StandardError)
+    @logger.log_info('Invalid command was handled gracefully.')
+    @script.disconnect
+  end
 end

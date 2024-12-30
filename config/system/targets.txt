@@ -1,5 +1,6 @@
 # config/system/targets.txt
 # COSMOS v4 System Targets Configuration File
+# Defines targets, configuration files, and default parameters.
 
 # --------------------------------------------
 # GLOBAL SYSTEM TARGET
@@ -17,33 +18,44 @@ DECLARE_TARGET DELPHY
 DESCRIPTION "Target configuration for the DELPHY system."
 
 # Configuration File:
-# Defines system-level settings, initial parameters, and global defaults for DELPHY.
+# - Defines system-level settings and initial parameters for DELPHY.
 CONFIG_FILE config/targets/DELPHY/config.txt
 
 # Defaults File:
-# Specifies default values for command parameters and telemetry settings.
+# - Specifies default values for commands, telemetry, and retries.
 DEFAULTS_FILE config/targets/DELPHY/defaults.txt
 
 # Interfaces File:
-# Details interface configurations for communication protocols (e.g., TCP/IP).
+# - Configures communication protocols, including TCP/IP connection details.
 INTERFACES_FILE config/targets/DELPHY/interfaces.txt
 
 # Metadata File:
-# Provides metadata definitions for DELPHY commands and telemetry.
+# - Provides metadata definitions for DELPHY commands, telemetry, and response codes.
 METADATA_FILE config/targets/DELPHY/metadata.txt
 
 # Monitors File:
-# Contains monitoring rules and validation logic for telemetry data.
+# - Contains monitoring rules for telemetry validation and error thresholds.
 MONITORS_FILE config/targets/DELPHY/monitors.txt
 
 # Tools Configuration:
-# DELPHY-specific tools are configured in their dedicated tools file.
+# - Lists DELPHY-specific tools and their settings.
 TOOLS_FILE config/targets/DELPHY/tools.txt
 
-# Logging:
-# Logs related to DELPHY target operations are stored in the target-specific logs directory.
+# Logging Directory:
+# - Stores logs related to DELPHY target operations.
 LOG_DIRECTORY config/targets/DELPHY/logs
 
 # --------------------------------------------
-# END OF TARGETS CONFIGURATION
+# COMMENTS FOR CLARITY
+# --------------------------------------------
+# CONFIG_FILE: Holds system-level parameters.
+# DEFAULTS_FILE: Provides fallback and default values for commands.
+# INTERFACES_FILE: Communication configurations (e.g., IP, port).
+# METADATA_FILE: Command and telemetry specifications.
+# MONITORS_FILE: Rules for telemetry monitoring and validation.
+# TOOLS_FILE: Configures DELPHY-specific tools for COSMOS operations.
+# LOG_DIRECTORY: Stores logs for DELPHY tools and telemetry monitoring.
+
+# --------------------------------------------
+# END OF DELPHY TARGET CONFIGURATION
 # --------------------------------------------
