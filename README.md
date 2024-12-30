@@ -117,7 +117,7 @@ Create a `.env` file to manage environment-specific configurations.
 ```plaintext
 DELPHY_INTERFACE=TCPIP
 DELPHY_IP=129.162.153.79
-DELPHY_PORT=5025
+DELPHY_PORT=14670
 ```
 
 ---
