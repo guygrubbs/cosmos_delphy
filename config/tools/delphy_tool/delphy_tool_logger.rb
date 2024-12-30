@@ -1,5 +1,4 @@
-#!/usr/bin/env ruby
-# config/targets/DELPHY/tools/delphy_tool_logger.rb
+# config/tools/delphy_tool_logger.rb
 # DELPHY Tool Logger for COSMOS v4 Deployment
 # Provides centralized logging functionality for DELPHY operations
 
@@ -8,7 +7,6 @@ require 'cosmos/logging/logger'
 require 'fileutils'
 require_relative '../../lib/delphy_constants'
 require_relative '../../lib/delphy_errors'
-require_relative '../../lib/delphy_logger'
 
 # --------------------------------------------
 # DELPHY Tool Logger Class
@@ -16,19 +14,13 @@ require_relative '../../lib/delphy_logger'
 class DelphyToolLogger
   include DelphyConstants
 
-  LOG_DIRECTORY = 'config/targets/DELPHY/tools/logs'.freeze
+  LOG_DIRECTORY = 'config/tools/delphy_tool/logs'.freeze
   LOG_FILE = "#{LOG_DIRECTORY}/delphy_tool.log".freeze
 
   def initialize
-    @logger = DelphyToolLogger.new('config/targets/DELPHY/tools/logs/delphy_tool_logger.log', 'WARN')
-    @logger.info('DELPHY_LOGGER initialized')
-  end
-
-  def log_test_message
-    @logger.debug('This is a debug message.')
-    @logger.info('This is an info message.')
-    @logger.warn('This is a warning message.')
-    @logger.error('This is an error message.')
+    setup_log_directory
+    setup_logger
+    Cosmos::Logger.info('[DELPHY_LOGGER] DELPHY Tool Logger Initialized')
   end
 
   # --------------------------------------------
@@ -43,16 +35,9 @@ class DelphyToolLogger
 
   def setup_logger
     @logger = Cosmos::Logger.new
-    @logger.add_file_logger(@log_file_path)
-    @logger.level = case @log_level.upcase
-                    when 'DEBUG' then Cosmos::Logger::DEBUG
-                    when 'INFO' then Cosmos::Logger::INFO
-                    when 'WARN' then Cosmos::Logger::WARN
-                    when 'ERROR' then Cosmos::Logger::ERROR
-                    when 'FATAL' then Cosmos::Logger::FATAL
-                    else Cosmos::Logger::INFO
-                    end
-    Cosmos::Logger.info("[DELPHY_LOGGER] Logging to file: #{@log_file_path}")
+    @logger.add_file_logger(LOG_FILE)
+    @logger.level = Cosmos::Logger::INFO
+    Cosmos::Logger.info("[DELPHY_LOGGER] Logging to file: #{LOG_FILE}")
   rescue StandardError => e
     puts "[DELPHY_LOGGER] Failed to set up logger: #{e.message}"
     raise DelphyConfigurationError, 'Logger initialization failed.'
@@ -77,15 +62,10 @@ class DelphyToolLogger
   end
 
   # Log error messages
-  def log_error(message, exception = nil)
-    formatted_message = "[ERROR] #{message}"
-    formatted_message += "\nTraceback: #{exception.full_message}" if exception
-    begin
-      @logger.error(formatted_message)
-    rescue StandardError => e
-      puts "Failed to write error log: #{e.message}"
-      puts e.full_message
-    end
+  def log_error(message)
+    @logger.error("[DELPHY_LOGGER] ERROR: #{message}")
+  rescue StandardError => e
+    puts "[DELPHY_LOGGER] Failed to log ERROR: #{e.message}"
   end
 
   # Log debug messages
@@ -96,10 +76,8 @@ class DelphyToolLogger
   end
 
   # Log critical/fatal errors
-  def log_critical(message, exception = nil)
-    formatted_message = "[DELPHY_LOGGER] CRITICAL: #{message}"
-    formatted_message += "\nTraceback: #{exception.full_message}" if exception
-    @logger.fatal(formatted_message)
+  def log_critical(message)
+    @logger.fatal("[DELPHY_LOGGER] CRITICAL: #{message}")
   rescue StandardError => e
     puts "[DELPHY_LOGGER] Failed to log CRITICAL: #{e.message}"
   end
@@ -162,16 +140,4 @@ if __FILE__ == $PROGRAM_NAME
     logger.info('This is an informational message')
     logger.warning('This is a warning message')
     logger.error('This is an error message')
-    logger.debug('This is a debug message')
-    logger.critical('This is a critical error')
-
-    # Test specialized logging
-    logger.connection_event('Test Connection', 'Success')
-    logger.command_event('RUN_TEST', { param1: 123, param2: 'abc' })
-    logger.telemetry_event('HEALTH_PACKET', { status: 'OK', voltage: 3.3 })
-
-    logger.close_logger
-  rescue StandardError => e
-    puts "Logger test failed: #{e.message}"
-  end
-end
+    logger.debug('This is a debug

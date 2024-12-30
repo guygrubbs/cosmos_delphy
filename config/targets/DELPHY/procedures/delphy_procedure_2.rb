@@ -31,11 +31,11 @@ class DelphyProcedure2
   ## 1. Connection and Initialization
   def initialize_connection
     begin
-      @logger.log_info('Initializing connection to DELPHY...')
+      @logger.info('Initializing connection to DELPHY...')
       @tool.connect
-      @logger.log_info('Connection initialization SUCCESSFUL.')
+      @logger.info('Connection initialization SUCCESSFUL.')
     rescue DelphyConnectionError => e
-      @logger.log_error("Connection initialization FAILED: #{e.message}")
+      @logger.error("Connection initialization FAILED: #{e.message}")
       raise
     end
   end
@@ -43,11 +43,11 @@ class DelphyProcedure2
   ## 2. Execute Custom Script
   def execute_custom_script(script_id, parameter)
     begin
-      @logger.log_info("Executing custom script ID=#{script_id} with PARAMETER=#{parameter}...")
+      @logger.info("Executing custom script ID=#{script_id} with PARAMETER=#{parameter}...")
       @tool.run_script(script_id, parameter)
-      @logger.log_info('Custom script executed SUCCESSFULLY.')
+      @logger.info('Custom script executed SUCCESSFULLY.')
     rescue DelphyCommandError => e
-      @logger.log_error("Custom script execution FAILED: #{e.message}")
+      @logger.error("Custom script execution FAILED: #{e.message}")
       raise
     end
   end
@@ -55,7 +55,7 @@ class DelphyProcedure2
   ## 3. Validate Telemetry Data
   def validate_telemetry
     begin
-      @logger.log_info('Validating telemetry packets (ACK, COMPLETE)...')
+      @logger.info('Validating telemetry packets (ACK, COMPLETE)...')
       ack_packet = @tool.monitor_telemetry(:ack, ACK_TIMEOUT)
       complete_packet = @tool.monitor_telemetry(:complete, COMPLETE_TIMEOUT)
 
@@ -67,9 +67,9 @@ class DelphyProcedure2
         raise DelphyAcknowledgmentError, 'COMPLETE telemetry response is invalid.'
       end
 
-      @logger.log_info('Telemetry validation PASSED.')
+      @logger.info('Telemetry validation PASSED.')
     rescue DelphyTelemetryTimeoutError => e
-      @logger.log_error("Telemetry validation FAILED: #{e.message}")
+      @logger.error("Telemetry validation FAILED: #{e.message}")
       raise
     end
   end
@@ -77,11 +77,11 @@ class DelphyProcedure2
   ## 4. Advanced Diagnostics
   def perform_advanced_diagnostics
     begin
-      @logger.log_info('Performing advanced diagnostics on DELPHY...')
+      @logger.info('Performing advanced diagnostics on DELPHY...')
       @tool.perform_diagnostics
-      @logger.log_info('Advanced diagnostics completed SUCCESSFULLY.')
+      @logger.info('Advanced diagnostics completed SUCCESSFULLY.')
     rescue DelphyError => e
-      @logger.log_error("Advanced diagnostics FAILED: #{e.message}")
+      @logger.error("Advanced diagnostics FAILED: #{e.message}")
       raise
     end
   end
@@ -89,12 +89,12 @@ class DelphyProcedure2
   ## 5. Error Recovery Test
   def test_error_recovery
     begin
-      @logger.log_info('Testing error recovery mechanism...')
+      @logger.info('Testing error recovery mechanism...')
       DelphyHelper.send_command(TARGET, 'INVALID_COMMAND')
     rescue DelphyCommandError => e
-      @logger.log_info("Error recovery PASSED: #{e.message}")
+      @logger.info("Error recovery PASSED: #{e.message}")
     rescue StandardError => e
-      @logger.log_error("Error recovery FAILED: #{e.message}")
+      @logger.error("Error recovery FAILED: #{e.message}")
       raise
     end
   end
@@ -102,15 +102,15 @@ class DelphyProcedure2
   ## 6. System State Verification
   def verify_system_state
     begin
-      @logger.log_info('Verifying DELPHY system state...')
+      @logger.info('Verifying DELPHY system state...')
       @tool.connect
       system_state = @tool.monitor_telemetry(:metadata, TELEMETRY_TIMEOUT)
       parsed_state = @tool.parse_telemetry(system_state)
 
-      @logger.log_info("System State: #{parsed_state.inspect}")
-      @logger.log_info('System state verification PASSED.')
+      @logger.info("System State: #{parsed_state.inspect}")
+      @logger.info('System state verification PASSED.')
     rescue DelphyError => e
-      @logger.log_error("System state verification FAILED: #{e.message}")
+      @logger.error("System state verification FAILED: #{e.message}")
       raise
     ensure
       @tool.disconnect
@@ -120,11 +120,11 @@ class DelphyProcedure2
   ## 7. Graceful System Reset
   def graceful_reset
     begin
-      @logger.log_info('Performing a graceful system reset...')
+      @logger.info('Performing a graceful system reset...')
       @tool.reset_system(0, 'Graceful reset after Procedure 2')
-      @logger.log_info('System reset completed SUCCESSFULLY.')
+      @logger.info('System reset completed SUCCESSFULLY.')
     rescue DelphyCommandError => e
-      @logger.log_error("System reset FAILED: #{e.message}")
+      @logger.error("System reset FAILED: #{e.message}")
       raise
     end
   end
@@ -133,7 +133,7 @@ class DelphyProcedure2
   # WORKFLOW EXECUTION
   # --------------------------------------------
   def run_procedure
-    @logger.log_info('Starting DELPHY Procedure 2...')
+    @logger.info('Starting DELPHY Procedure 2...')
     begin
       initialize_connection
       execute_custom_script(2, 456.78)
@@ -142,9 +142,9 @@ class DelphyProcedure2
       test_error_recovery
       verify_system_state
       graceful_reset
-      @logger.log_info('DELPHY Procedure 2 COMPLETED SUCCESSFULLY.')
+      @logger.info('DELPHY Procedure 2 COMPLETED SUCCESSFULLY.')
     rescue DelphyError => e
-      @logger.log_error("Procedure 2 FAILED: #{e.message}")
+      @logger.error("Procedure 2 FAILED: #{e.message}")
     ensure
       @tool.disconnect
       @logger.close_logger
@@ -200,7 +200,7 @@ class DelphyProcedure2
     puts "\nExiting session..."
     @tool.disconnect
   rescue StandardError => e
-    @logger.log_error("Interactive session error: #{e.message}")
+    @logger.error("Interactive session error: #{e.message}")
     puts "Error: #{e.message}"
   ensure
     @logger.close_logger

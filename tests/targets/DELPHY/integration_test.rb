@@ -14,12 +14,12 @@ RSpec.describe 'DELPHY Integration Tests' do
     @logger = DelphyToolLogger.new('config/targets/DELPHY/tools/logs/integration_test.log', 'DEBUG')
     @script = DelphyScript.new
     @test = DelphyToolTest.new
-    @logger.log_info('Integration tests initialized.')
+    @logger.info('Integration tests initialized.')
   end
 
   after(:all) do
     @script.disconnect
-    @logger.log_info('Integration tests completed.')
+    @logger.info('Integration tests completed.')
     @logger.close_logger
   end
 
@@ -28,9 +28,9 @@ RSpec.describe 'DELPHY Integration Tests' do
   # --------------------------------------------
   it 'establishes and disconnects a connection successfully' do
     expect { @script.connect }.not_to raise_error
-    @logger.log_info('Connection established successfully.')
+    @logger.info('Connection established successfully.')
     expect { @script.disconnect }.not_to raise_error
-    @logger.log_info('Connection disconnected successfully.')
+    @logger.info('Connection disconnected successfully.')
   end
 
   # --------------------------------------------
@@ -39,14 +39,14 @@ RSpec.describe 'DELPHY Integration Tests' do
   it 'executes RUN_SCRIPT command successfully' do
     @script.connect
     expect { @script.run_script(1, 123.45) }.not_to raise_error
-    @logger.log_info('RUN_SCRIPT command executed successfully.')
+    @logger.info('RUN_SCRIPT command executed successfully.')
     @script.disconnect
   end
 
   it 'executes RESET_SYSTEM command successfully' do
     @script.connect
     expect { @script.reset_system(0, 'Integration Test Reset') }.not_to raise_error
-    @logger.log_info('RESET_SYSTEM command executed successfully.')
+    @logger.info('RESET_SYSTEM command executed successfully.')
     @script.disconnect
   end
 
@@ -57,7 +57,7 @@ RSpec.describe 'DELPHY Integration Tests' do
     @script.connect
     telemetry = @script.monitor_telemetry(:ack, 10)
     expect(telemetry[:response_code]).to eq(0)
-    @logger.log_info('ACK telemetry received and validated successfully.')
+    @logger.info('ACK telemetry received and validated successfully.')
     @script.disconnect
   end
 
@@ -65,7 +65,7 @@ RSpec.describe 'DELPHY Integration Tests' do
     @script.connect
     telemetry = @script.monitor_telemetry(:complete, 10)
     expect(telemetry[:status_code]).to eq(0)
-    @logger.log_info('COMPLETE telemetry received and validated successfully.')
+    @logger.info('COMPLETE telemetry received and validated successfully.')
     @script.disconnect
   end
 
@@ -74,7 +74,7 @@ RSpec.describe 'DELPHY Integration Tests' do
   # --------------------------------------------
   it 'executes a full workflow successfully' do
     expect { @script.execute_full_workflow(1, 123.45) }.not_to raise_error
-    @logger.log_info('Full workflow executed successfully.')
+    @logger.info('Full workflow executed successfully.')
   end
 
   # --------------------------------------------
@@ -83,7 +83,7 @@ RSpec.describe 'DELPHY Integration Tests' do
   it 'handles invalid command gracefully' do
     @script.connect
     expect { @script.run_script(nil, nil) }.to raise_error(StandardError)
-    @logger.log_info('Invalid command was handled gracefully.')
+    @logger.info('Invalid command was handled gracefully.')
     @script.disconnect
   end
 end

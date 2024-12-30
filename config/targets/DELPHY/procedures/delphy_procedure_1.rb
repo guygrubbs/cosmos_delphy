@@ -31,11 +31,11 @@ class DelphyProcedure1
   ## 1. Establish Connection
   def establish_connection
     begin
-      @logger.log_info('Establishing connection to DELPHY...')
+      @logger.info('Establishing connection to DELPHY...')
       @tool.connect
-      @logger.log_info('Connection established successfully.')
+      @logger.info('Connection established successfully.')
     rescue DelphyConnectionError => e
-      @logger.log_error("Connection establishment FAILED: #{e.message}")
+      @logger.error("Connection establishment FAILED: #{e.message}")
       raise
     end
   end
@@ -43,11 +43,11 @@ class DelphyProcedure1
   ## 2. Execute Predefined Script
   def execute_script
     begin
-      @logger.log_info('Executing predefined script on DELPHY...')
+      @logger.info('Executing predefined script on DELPHY...')
       @tool.run_script(1, 123.45)
-      @logger.log_info('Script executed successfully.')
+      @logger.info('Script executed successfully.')
     rescue DelphyCommandError => e
-      @logger.log_error("Script execution FAILED: #{e.message}")
+      @logger.error("Script execution FAILED: #{e.message}")
       raise
     end
   end
@@ -55,7 +55,7 @@ class DelphyProcedure1
   ## 3. Monitor Telemetry
   def monitor_telemetry
     begin
-      @logger.log_info('Monitoring telemetry for ACK and COMPLETE packets...')
+      @logger.info('Monitoring telemetry for ACK and COMPLETE packets...')
       ack_packet = @tool.monitor_telemetry(:ack, ACK_TIMEOUT)
       complete_packet = @tool.monitor_telemetry(:complete, COMPLETE_TIMEOUT)
 
@@ -67,9 +67,9 @@ class DelphyProcedure1
         raise DelphyAcknowledgmentError, 'Invalid COMPLETE telemetry response.'
       end
 
-      @logger.log_info('Telemetry monitoring PASSED.')
+      @logger.info('Telemetry monitoring PASSED.')
     rescue DelphyTelemetryTimeoutError => e
-      @logger.log_error("Telemetry monitoring FAILED: #{e.message}")
+      @logger.error("Telemetry monitoring FAILED: #{e.message}")
       raise
     end
   end
@@ -77,11 +77,11 @@ class DelphyProcedure1
   ## 4. Perform Diagnostics
   def perform_diagnostics
     begin
-      @logger.log_info('Performing system diagnostics...')
+      @logger.info('Performing system diagnostics...')
       @tool.perform_diagnostics
-      @logger.log_info('Diagnostics completed successfully.')
+      @logger.info('Diagnostics completed successfully.')
     rescue DelphyError => e
-      @logger.log_error("Diagnostics FAILED: #{e.message}")
+      @logger.error("Diagnostics FAILED: #{e.message}")
       raise
     end
   end
@@ -89,12 +89,12 @@ class DelphyProcedure1
   ## 5. Error Handling Check
   def check_error_handling
     begin
-      @logger.log_info('Validating error handling with an invalid command...')
+      @logger.info('Validating error handling with an invalid command...')
       DelphyHelper.send_command(TARGET, 'INVALID_COMMAND')
     rescue DelphyCommandError => e
-      @logger.log_info("Error handling validation PASSED: #{e.message}")
+      @logger.info("Error handling validation PASSED: #{e.message}")
     rescue StandardError => e
-      @logger.log_error("Error handling validation FAILED: #{e.message}")
+      @logger.error("Error handling validation FAILED: #{e.message}")
       raise
     end
   end
@@ -102,11 +102,11 @@ class DelphyProcedure1
   ## 6. Reset System
   def reset_system
     begin
-      @logger.log_info('Resetting DELPHY system after procedure completion...')
+      @logger.info('Resetting DELPHY system after procedure completion...')
       @tool.reset_system(0, 'Procedure 1 reset')
-      @logger.log_info('System reset successfully.')
+      @logger.info('System reset successfully.')
     rescue DelphyCommandError => e
-      @logger.log_error("System reset FAILED: #{e.message}")
+      @logger.error("System reset FAILED: #{e.message}")
       raise
     end
   end
@@ -115,7 +115,7 @@ class DelphyProcedure1
   # WORKFLOW EXECUTION
   # --------------------------------------------
   def run_procedure
-    @logger.log_info('Starting DELPHY Procedure 1...')
+    @logger.info('Starting DELPHY Procedure 1...')
     begin
       establish_connection
       execute_script
@@ -123,9 +123,9 @@ class DelphyProcedure1
       perform_diagnostics
       check_error_handling
       reset_system
-      @logger.log_info('DELPHY Procedure 1 COMPLETED successfully.')
+      @logger.info('DELPHY Procedure 1 COMPLETED successfully.')
     rescue DelphyError => e
-      @logger.log_error("Procedure 1 FAILED: #{e.message}")
+      @logger.error("Procedure 1 FAILED: #{e.message}")
     ensure
       @tool.disconnect
       @logger.close_logger
@@ -177,7 +177,7 @@ class DelphyProcedure1
     puts "\nExiting session..."
     @tool.disconnect
   rescue StandardError => e
-    @logger.log_error("Interactive session error: #{e.message}")
+    @logger.error("Interactive session error: #{e.message}")
     puts "Error: #{e.message}"
   ensure
     @logger.close_logger

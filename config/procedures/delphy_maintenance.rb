@@ -30,11 +30,11 @@ class DelphyMaintenance
   # 1. Check Connection
   def check_connection
     begin
-      @logger.log_info('Performing connection health check...')
+      @logger.info('Performing connection health check...')
       @tool.connect
-      @logger.log_info('Connection health check PASSED.')
+      @logger.info('Connection health check PASSED.')
     rescue DelphyError => e
-      @logger.log_error("Connection health check FAILED: #{e.message}")
+      @logger.error("Connection health check FAILED: #{e.message}")
       raise
     ensure
       @tool.disconnect
@@ -44,7 +44,7 @@ class DelphyMaintenance
   # 2. Monitor System Telemetry
   def monitor_system_telemetry
     begin
-      @logger.log_info('Monitoring system telemetry for anomalies...')
+      @logger.info('Monitoring system telemetry for anomalies...')
       @tool.connect
       ack_packet = @tool.monitor_telemetry(:ack, ACK_TIMEOUT)
       complete_packet = @tool.monitor_telemetry(:complete, COMPLETE_TIMEOUT)
@@ -53,9 +53,9 @@ class DelphyMaintenance
         raise DelphyTelemetryTimeoutError, 'Telemetry response indicates a fault.'
       end
 
-      @logger.log_info('System telemetry monitoring PASSED.')
+      @logger.info('System telemetry monitoring PASSED.')
     rescue DelphyError => e
-      @logger.log_error("System telemetry monitoring FAILED: #{e.message}")
+      @logger.error("System telemetry monitoring FAILED: #{e.message}")
       raise
     ensure
       @tool.disconnect
@@ -65,12 +65,12 @@ class DelphyMaintenance
   # 3. Perform Diagnostics
   def perform_diagnostics
     begin
-      @logger.log_info('Performing system diagnostics...')
+      @logger.info('Performing system diagnostics...')
       @tool.connect
       @tool.perform_diagnostics
-      @logger.log_info('System diagnostics PASSED.')
+      @logger.info('System diagnostics PASSED.')
     rescue DelphyError => e
-      @logger.log_error("System diagnostics FAILED: #{e.message}")
+      @logger.error("System diagnostics FAILED: #{e.message}")
       raise
     ensure
       @tool.disconnect
@@ -80,12 +80,12 @@ class DelphyMaintenance
   # 4. Reset System
   def reset_system
     begin
-      @logger.log_info('Performing system reset...')
+      @logger.info('Performing system reset...')
       @tool.connect
       @tool.reset_system(0, 'Scheduled Maintenance Reset')
-      @logger.log_info('System reset PASSED.')
+      @logger.info('System reset PASSED.')
     rescue DelphyError => e
-      @logger.log_error("System reset FAILED: #{e.message}")
+      @logger.error("System reset FAILED: #{e.message}")
       raise
     ensure
       @tool.disconnect
@@ -95,12 +95,12 @@ class DelphyMaintenance
   # 5. Verify Configuration
   def verify_configuration
     begin
-      @logger.log_info('Verifying DELPHY system configuration...')
+      @logger.info('Verifying DELPHY system configuration...')
       @tool.connect
       DelphyHelper.validate_parameter(50.0, 0.0, 100.0)
-      @logger.log_info('System configuration verification PASSED.')
+      @logger.info('System configuration verification PASSED.')
     rescue DelphyError => e
-      @logger.log_error("System configuration verification FAILED: #{e.message}")
+      @logger.error("System configuration verification FAILED: #{e.message}")
       raise
     ensure
       @tool.disconnect
@@ -110,15 +110,15 @@ class DelphyMaintenance
   # 6. Clean Logs
   def clean_logs
     begin
-      @logger.log_info('Cleaning old logs...')
+      @logger.info('Cleaning old logs...')
       log_dir = 'config/tools/delphy_tool/logs'
       Dir.glob("#{log_dir}/*.log").each do |file|
         File.delete(file)
-        @logger.log_info("Deleted log file: #{file}")
+        @logger.info("Deleted log file: #{file}")
       end
-      @logger.log_info('Log cleanup completed successfully.')
+      @logger.info('Log cleanup completed successfully.')
     rescue StandardError => e
-      @logger.log_error("Log cleanup FAILED: #{e.message}")
+      @logger.error("Log cleanup FAILED: #{e.message}")
       raise
     end
   end
@@ -127,7 +127,7 @@ class DelphyMaintenance
   # MAINTENANCE WORKFLOW
   # --------------------------------------------
   def perform_maintenance
-    @logger.log_info('Starting DELPHY Maintenance Procedure...')
+    @logger.info('Starting DELPHY Maintenance Procedure...')
     begin
       check_connection
       monitor_system_telemetry
@@ -135,9 +135,9 @@ class DelphyMaintenance
       verify_configuration
       reset_system
       clean_logs
-      @logger.log_info('DELPHY Maintenance Procedure COMPLETED successfully.')
+      @logger.info('DELPHY Maintenance Procedure COMPLETED successfully.')
     rescue DelphyError => e
-      @logger.log_error("Maintenance Procedure FAILED: #{e.message}")
+      @logger.error("Maintenance Procedure FAILED: #{e.message}")
     ensure
       @tool.disconnect
       @logger.close_logger
@@ -189,7 +189,7 @@ class DelphyMaintenance
     puts "\nExiting session..."
     @tool.disconnect
   rescue StandardError => e
-    @logger.log_error("Interactive session encountered an error: #{e.message}")
+    @logger.error("Interactive session encountered an error: #{e.message}")
     puts "Error: #{e.message}"
   ensure
     @logger.close_logger

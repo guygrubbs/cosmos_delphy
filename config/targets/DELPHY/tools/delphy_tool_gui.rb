@@ -74,14 +74,16 @@ class DelphyToolGUI < Cosmos::QtTool
   # Button Handlers
   # --------------------------------------------
   def handle_connect
-    @logger.info('Attempting to connect via GUI...')
     begin
-      cmd('DELPHY', 'CONNECT')
-      @log_area.append('Connected to DELPHY successfully.')
-      @logger.info('Connected successfully.')
+      @tool.connect
+      @logger.info('GUI: Connected to DELPHY successfully.')
+    rescue DelphyConnectionError => e
+      @logger.error("GUI: Connection error - #{e.message}")
+      display_error("Connection Error: #{e.message}")
     rescue StandardError => e
-      @log_area.append("Connection failed: #{e.message}")
-      @logger.error("Connection failed: #{e.message}", e)
+      @logger.error("GUI: Unexpected connection error - #{e.message}")
+      @logger.error(e.full_message)
+      display_error('Unexpected error occurred during connection.')
     end
   end
 
@@ -124,16 +126,16 @@ class DelphyToolGUI < Cosmos::QtTool
   end
 
   def handle_reset_system
-    reset_mode = Qt::InputDialog.getInt(self, 'Reset Mode', 'Enter Reset Mode:')
-    reset_reason = Qt::InputDialog.getText(self, 'Reset Reason', 'Enter Reset Reason:')
-    @logger.info("Resetting system with Mode=#{reset_mode}, Reason=#{reset_reason}")
     begin
-      cmd('DELPHY', 'RESET_SYSTEM', 'MODE' => reset_mode, 'REASON' => reset_reason)
-      @log_area.append('System reset successfully.')
-      @logger.info('System reset successfully.')
+      @tool.reset_system(0, 'GUI Reset Command')
+      @logger.info('GUI: Reset command executed successfully.')
+    rescue DelphyCommandError => e
+      @logger.error("GUI: Reset command failed - #{e.message}")
+      display_error("Reset Command Error: #{e.message}")
     rescue StandardError => e
-      @log_area.append("System reset failed: #{e.message}")
-      @logger.error("System reset failed: #{e.message}", e)
+      @logger.error("GUI: Unexpected reset error - #{e.message}")
+      @logger.error(e.full_message)
+      display_error('Unexpected error occurred during reset.')
     end
   end
 

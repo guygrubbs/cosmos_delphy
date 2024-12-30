@@ -9,29 +9,32 @@ require_relative '../../lib/delphy_tool'
 require_relative '../../lib/delphy_constants'
 require_relative '../../lib/delphy_errors'
 require_relative '../../lib/delphy_helper'
+require_relative '../../lib/delphy_logger'
 require_relative 'delphy_tool_logger'
 
 # --------------------------------------------
 # DELPHY Script Class
 # --------------------------------------------
 class DelphyScript
-  include DelphyConstants
-  include DelphyHelper
-
   def initialize
-    @tool = DelphyTool.new
     @logger = DelphyToolLogger.new('config/targets/DELPHY/tools/logs/delphy_script.log', 'INFO')
-    @logger.info('[DELPHY_SCRIPT] DELPHY Script Initialized')
+    @logger.info('DELPHY_SCRIPT initialized')
   end
 
   # Connect to DELPHY
   def connect
     @logger.info('Attempting to connect to DELPHY...')
-    @tool.connect
-    @logger.info('Connected to DELPHY successfully.')
-  rescue DelphyError => e
-    @logger.error("Connection failed: #{e.message}")
-    raise
+    begin
+      @tool.connect
+      @logger.info('Connected to DELPHY successfully.')
+    rescue DelphyConnectionError => e
+      @logger.error("Connection failed: #{e.message}")
+      raise
+    rescue StandardError => e
+      @logger.error("Unexpected error during connection: #{e.message}")
+      @logger.error(e.full_message)
+      raise
+    end
   end
 
   # Disconnect from DELPHY
@@ -45,12 +48,19 @@ class DelphyScript
 
   # Run a DELPHY Script
   def run_script(script_id, parameter)
-    @logger.info("Running script with ID=#{script_id} and PARAMETER=#{parameter}...")
-    @tool.run_script(script_id, parameter)
-    @logger.info('Script executed successfully.')
-  rescue DelphyError => e
-    @logger.error("Script execution failed: #{e.message}")
-    raise
+    @logger.info("Executing script with ID=#{script_id} and PARAMETER=#{parameter}")
+    begin
+      raise DelphyCommandError, 'Script ID cannot be nil' if script_id.nil?
+      @tool.run_script(script_id, parameter)
+      @logger.info('Script executed successfully.')
+    rescue DelphyCommandError => e
+      @logger.error("Command execution failed: #{e.message}")
+      raise
+    rescue StandardError => e
+      @logger.error("Unexpected error during script execution: #{e.message}")
+      @logger.error(e.full_message)
+      raise
+    end
   end
 
   # Send a Message

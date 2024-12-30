@@ -30,11 +30,11 @@ class DelphyTestRun
   # Test Connection to DELPHY
   def test_connection
     begin
-      @logger.log_info('Testing connection to DELPHY...')
+      @logger.info('Testing connection to DELPHY...')
       @tool.connect
-      @logger.log_info('Connection test PASSED.')
+      @logger.info('Connection test PASSED.')
     rescue DelphyError => e
-      @logger.log_error("Connection test FAILED: #{e.message}")
+      @logger.error("Connection test FAILED: #{e.message}")
       raise
     ensure
       @tool.disconnect
@@ -44,12 +44,12 @@ class DelphyTestRun
   # Test RUN_SCRIPT Command
   def test_run_script
     begin
-      @logger.log_info('Testing RUN_SCRIPT command...')
+      @logger.info('Testing RUN_SCRIPT command...')
       @tool.connect
       @tool.run_script(1, 123.45)
-      @logger.log_info('RUN_SCRIPT command test PASSED.')
+      @logger.info('RUN_SCRIPT command test PASSED.')
     rescue DelphyError => e
-      @logger.log_error("RUN_SCRIPT command test FAILED: #{e.message}")
+      @logger.error("RUN_SCRIPT command test FAILED: #{e.message}")
       raise
     ensure
       @tool.disconnect
@@ -59,12 +59,12 @@ class DelphyTestRun
   # Test SEND_MESSAGE Command
   def test_send_message
     begin
-      @logger.log_info('Testing SEND_MESSAGE command...')
+      @logger.info('Testing SEND_MESSAGE command...')
       @tool.connect
       @tool.send_message(0, 'Test message from DELPHY_TEST_RUN')
-      @logger.log_info('SEND_MESSAGE command test PASSED.')
+      @logger.info('SEND_MESSAGE command test PASSED.')
     rescue DelphyError => e
-      @logger.log_error("SEND_MESSAGE command test FAILED: #{e.message}")
+      @logger.error("SEND_MESSAGE command test FAILED: #{e.message}")
       raise
     ensure
       @tool.disconnect
@@ -74,12 +74,12 @@ class DelphyTestRun
   # Test RESET_SYSTEM Command
   def test_reset_system
     begin
-      @logger.log_info('Testing RESET_SYSTEM command...')
+      @logger.info('Testing RESET_SYSTEM command...')
       @tool.connect
       @tool.reset_system(0, 'Routine maintenance reset')
-      @logger.log_info('RESET_SYSTEM command test PASSED.')
+      @logger.info('RESET_SYSTEM command test PASSED.')
     rescue DelphyError => e
-      @logger.log_error("RESET_SYSTEM command test FAILED: #{e.message}")
+      @logger.error("RESET_SYSTEM command test FAILED: #{e.message}")
       raise
     ensure
       @tool.disconnect
@@ -89,16 +89,16 @@ class DelphyTestRun
   # Test Telemetry ACK
   def test_telemetry_ack
     begin
-      @logger.log_info('Testing ACK telemetry...')
+      @logger.info('Testing ACK telemetry...')
       @tool.connect
       packet = @tool.monitor_telemetry(:ack, ACK_TIMEOUT)
       if packet[:response_code] == 0
-        @logger.log_info('ACK telemetry test PASSED.')
+        @logger.info('ACK telemetry test PASSED.')
       else
         raise DelphyAcknowledgmentError, 'Invalid ACK response code received.'
       end
     rescue DelphyError => e
-      @logger.log_error("ACK telemetry test FAILED: #{e.message}")
+      @logger.error("ACK telemetry test FAILED: #{e.message}")
       raise
     ensure
       @tool.disconnect
@@ -108,11 +108,11 @@ class DelphyTestRun
   # Test Full Workflow
   def test_full_workflow
     begin
-      @logger.log_info('Testing full DELPHY workflow...')
+      @logger.info('Testing full DELPHY workflow...')
       @tool.execute_full_workflow(1, 456.78)
-      @logger.log_info('Full workflow test PASSED.')
+      @logger.info('Full workflow test PASSED.')
     rescue DelphyError => e
-      @logger.log_error("Full workflow test FAILED: #{e.message}")
+      @logger.error("Full workflow test FAILED: #{e.message}")
       raise
     ensure
       @tool.disconnect
@@ -122,13 +122,13 @@ class DelphyTestRun
   # Test Invalid Command Handling
   def test_invalid_command
     begin
-      @logger.log_info('Testing invalid command handling...')
+      @logger.info('Testing invalid command handling...')
       @tool.connect
       DelphyHelper.send_command(TARGET, 'INVALID_COMMAND')
     rescue DelphyCommandError => e
-      @logger.log_info("Invalid command test PASSED: #{e.message}")
+      @logger.info("Invalid command test PASSED: #{e.message}")
     rescue StandardError => e
-      @logger.log_error("Invalid command test FAILED: #{e.message}")
+      @logger.error("Invalid command test FAILED: #{e.message}")
     ensure
       @tool.disconnect
     end
@@ -138,7 +138,7 @@ class DelphyTestRun
   # RUN ALL TESTS
   # --------------------------------------------
   def run_all_tests
-    @logger.log_info('Starting DELPHY Test Run Procedure...')
+    @logger.info('Starting DELPHY Test Run Procedure...')
     begin
       test_connection
       test_run_script
@@ -147,9 +147,9 @@ class DelphyTestRun
       test_telemetry_ack
       test_invalid_command
       test_full_workflow
-      @logger.log_info('All DELPHY tests PASSED successfully.')
+      @logger.info('All DELPHY tests PASSED successfully.')
     rescue DelphyError => e
-      @logger.log_error("Test suite encountered an error: #{e.message}")
+      @logger.error("Test suite encountered an error: #{e.message}")
     ensure
       @tool.disconnect
       @logger.close_logger

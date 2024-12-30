@@ -1,6 +1,6 @@
-# config/procedures/delphy_script.rb
-# DELPHY General Procedure Script for COSMOS v4 Deployment
-# Provides command execution, telemetry monitoring, diagnostics, and automated workflows.
+# config/tools/delphy_script.rb
+# DELPHY Standalone Script for COSMOS v4 Deployment
+# Provides command-line execution workflows for DELPHY operations
 
 require 'cosmos'
 require 'cosmos/logging/logger'
@@ -8,7 +8,6 @@ require_relative '../../lib/delphy_tool'
 require_relative '../../lib/delphy_constants'
 require_relative '../../lib/delphy_errors'
 require_relative '../../lib/delphy_helper'
-require_relative '../../lib/delphy_packet_parser'
 require_relative '../../config/tools/delphy_tool_logger'
 
 # --------------------------------------------
@@ -25,142 +24,123 @@ class DelphyScript
   end
 
   # --------------------------------------------
-  # COMMAND EXECUTION
+  # MAIN PROCEDURES
   # --------------------------------------------
+
+  # Connect to DELPHY
+  def connect
+    begin
+      @logger.info('Attempting to connect to DELPHY...')
+      @tool.connect
+      @logger.info('Connected to DELPHY successfully.')
+    rescue DelphyError => e
+      @logger.error("Connection failed: #{e.message}")
+      raise
+    end
+  end
+
+  # Disconnect from DELPHY
+  def disconnect
+    begin
+      @logger.info('Attempting to disconnect from DELPHY...')
+      @tool.disconnect
+      @logger.info('Disconnected from DELPHY successfully.')
+    rescue DelphyError => e
+      @logger.error("Disconnection failed: #{e.message}")
+    end
+  end
 
   # Run a DELPHY Script
   def run_script(script_id, parameter)
     begin
-      @logger.info("Running Script ID=#{script_id} with PARAMETER=#{parameter}...")
-      @tool.connect
+      @logger.info("Running script with ID=#{script_id} and PARAMETER=#{parameter}...")
       @tool.run_script(script_id, parameter)
       @logger.info('Script executed successfully.')
     rescue DelphyError => e
       @logger.error("Script execution failed: #{e.message}")
       raise
-    ensure
-      @tool.disconnect
     end
   end
 
-  # Send a Message to DELPHY
+  # Send a Message
   def send_message(log_level, message)
     begin
-      @logger.info("Sending message at LOG_LEVEL=#{log_level}: #{message}")
-      @tool.connect
+      @logger.info("Sending message with LOG_LEVEL=#{log_level}: #{message}")
       @tool.send_message(log_level, message)
       @logger.info('Message sent successfully.')
     rescue DelphyError => e
       @logger.error("Message failed: #{e.message}")
       raise
-    ensure
-      @tool.disconnect
     end
   end
 
-  # Reset DELPHY System
-  def reset_system(mode, reason)
+  # Reset System
+  def reset_system(reset_mode, reset_reason)
     begin
-      @logger.info("Resetting system in MODE=#{RESET_MODES[mode]} with REASON=#{reason}")
-      @tool.connect
-      @tool.reset_system(mode, reason)
+      @logger.info("Resetting system with MODE=#{RESET_MODES[reset_mode]} and REASON=#{reset_reason}")
+      @tool.reset_system(reset_mode, reset_reason)
       @logger.info('System reset successfully.')
     rescue DelphyError => e
       @logger.error("System reset failed: #{e.message}")
       raise
-    ensure
-      @tool.disconnect
     end
   end
-
-  # --------------------------------------------
-  # TELEMETRY MONITORING
-  # --------------------------------------------
 
   # Monitor Telemetry
   def monitor_telemetry(packet_type, timeout = TELEMETRY_TIMEOUT)
     begin
       @logger.info("Monitoring telemetry for TYPE=#{packet_type} with TIMEOUT=#{timeout}")
-      @tool.connect
       packet = @tool.monitor_telemetry(packet_type, timeout)
-      @logger.info("Telemetry Packet Received: #{packet.inspect}")
+      @logger.info("Telemetry received: #{packet.inspect}")
       return packet
     rescue DelphyError => e
       @logger.error("Telemetry monitoring failed: #{e.message}")
       raise
-    ensure
-      @tool.disconnect
     end
   end
 
-  # Parse Telemetry
-  def parse_telemetry(packet)
+  # Execute Full Workflow
+  def execute_full_workflow(script_id, parameter)
     begin
-      @logger.info('Parsing telemetry packet...')
-      parsed = @tool.parse_telemetry(packet)
-      @logger.info("Parsed Telemetry: #{parsed.inspect}")
-      return parsed
+      @logger.info('Starting full DELPHY workflow...')
+      connect
+      run_script(script_id, parameter)
+      monitor_telemetry(:complete, COMPLETE_TIMEOUT)
+      reset_system(0, 'End of Workflow')
+      @logger.info('Workflow completed successfully.')
     rescue DelphyError => e
-      @logger.error("Telemetry parsing failed: #{e.message}")
-      raise
+      @logger.error("Workflow failed: #{e.message}")
+    ensure
+      disconnect
     end
   end
-
-  # --------------------------------------------
-  # SYSTEM DIAGNOSTICS
-  # --------------------------------------------
 
   # Perform Diagnostics
   def perform_diagnostics
     begin
       @logger.info('Performing diagnostics on DELPHY...')
-      @tool.connect
       @tool.perform_diagnostics
       @logger.info('Diagnostics completed successfully.')
     rescue DelphyError => e
       @logger.error("Diagnostics failed: #{e.message}")
-      raise
-    ensure
-      @tool.disconnect
     end
   end
 
   # --------------------------------------------
-  # WORKFLOWS
+  # COMMAND-LINE INTERFACE
   # --------------------------------------------
-
-  # Full Automated Workflow
-  def execute_full_workflow(script_id, parameter)
-    begin
-      @logger.info('Starting full automated DELPHY workflow...')
-      @tool.connect
-      @tool.run_script(script_id, parameter)
-      telemetry_packet = @tool.monitor_telemetry(:complete, COMPLETE_TIMEOUT)
-      parsed_packet = @tool.parse_telemetry(telemetry_packet)
-      @tool.reset_system(0, 'End of workflow reset')
-      @logger.info("Workflow completed successfully: #{parsed_packet.inspect}")
-    rescue DelphyError => e
-      @logger.error("Workflow failed: #{e.message}")
-      raise
-    ensure
-      @tool.disconnect
-    end
-  end
-
-  # --------------------------------------------
-  # INTERACTIVE SESSION
-  # --------------------------------------------
-
-  def interactive_session
+  def start_interactive_session
     puts '--- DELPHY Interactive Session ---'
     puts 'Available Commands:'
-    puts '1. run_script [script_id] [parameter]'
-    puts '2. send_message [log_level] [message]'
-    puts '3. reset_system [mode] [reason]'
-    puts '4. monitor_telemetry [packet_type]'
-    puts '5. perform_diagnostics'
-    puts '6. execute_full_workflow [script_id] [parameter]'
-    puts '7. exit'
+    puts '1. connect'
+    puts '2. disconnect'
+    puts '3. run_script [script_id] [parameter]'
+    puts '4. send_message [log_level] [message]'
+    puts '5. reset_system [reset_mode] [reason]'
+    puts '6. monitor_telemetry [packet_type]'
+    puts '7. execute_workflow [script_id] [parameter]'
+    puts '8. diagnostics'
+    puts '9. exit'
 
     loop do
       print '> '
@@ -168,6 +148,10 @@ class DelphyScript
       command = input.shift
 
       case command
+      when 'connect'
+        connect
+      when 'disconnect'
+        disconnect
       when 'run_script'
         run_script(input[0].to_i, input[1].to_f)
       when 'send_message'
@@ -176,12 +160,13 @@ class DelphyScript
         reset_system(input[0].to_i, input[1..].join(' '))
       when 'monitor_telemetry'
         monitor_telemetry(input[0].to_sym)
-      when 'perform_diagnostics'
-        perform_diagnostics
-      when 'execute_full_workflow'
+      when 'execute_workflow'
         execute_full_workflow(input[0].to_i, input[1].to_f)
+      when 'diagnostics'
+        perform_diagnostics
       when 'exit'
-        puts 'Exiting interactive session...'
+        disconnect
+        puts 'Exiting...'
         break
       else
         puts 'Unknown command. Please try again.'
@@ -189,9 +174,9 @@ class DelphyScript
     end
   rescue Interrupt
     puts "\nExiting session..."
-    @tool.disconnect
+    disconnect
   rescue StandardError => e
-    @logger.error("Interactive session error: #{e.message}")
+    @logger.error("Error in interactive session: #{e.message}")
     puts "Error: #{e.message}"
   ensure
     @logger.close_logger
@@ -199,13 +184,12 @@ class DelphyScript
 end
 
 # --------------------------------------------
-# MAIN PROCEDURE EXECUTION
+# MAIN SCRIPT EXECUTION
 # --------------------------------------------
 if __FILE__ == $PROGRAM_NAME
   script = DelphyScript.new
-
   if ARGV.empty?
-    script.interactive_session
+    script.start_interactive_session
   else
     case ARGV[0]
     when 'workflow'
@@ -214,8 +198,8 @@ if __FILE__ == $PROGRAM_NAME
       script.perform_diagnostics
     else
       puts 'Usage:'
-      puts '  ruby config/procedures/delphy_script.rb workflow [script_id] [parameter]'
-      puts '  ruby config/procedures/delphy_script.rb diagnostics'
+      puts '  ruby config/tools/delphy_script.rb workflow [script_id] [parameter]'
+      puts '  ruby config/tools/delphy_script.rb diagnostics'
     end
   end
 end

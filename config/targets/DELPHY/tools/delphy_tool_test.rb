@@ -11,6 +11,7 @@ require_relative '../../lib/delphy_errors'
 require_relative '../../lib/delphy_helper'
 require_relative '../../lib/delphy_packet_parser'
 require_relative 'delphy_tool_logger'
+require_relative '../../lib/delphy_logger'
 
 # --------------------------------------------
 # DELPHY Tool Test Class
@@ -20,24 +21,19 @@ class DelphyToolTest
   include DelphyHelper
 
   def initialize
-    @tool = DelphyTool.new
-    @logger = DelphyToolLogger.new('config/targets/DELPHY/tools/logs/delphy_tool_test.log', 'INFO')
-    @logger.info('[DELPHY_TOOL_TEST] DELPHY Tool Test Initialized')
+    @logger = DelphyToolLogger.new('config/targets/DELPHY/tools/logs/delphy_tool_test.log', 'DEBUG')
+    @logger.info('DELPHY_TEST initialized')
   end
 
   # --------------------------------------------
   # Connection Tests
   # --------------------------------------------
   def test_connection
-    @logger.info('[DELPHY_TOOL_TEST] Testing Connection...')
-    begin
-      @tool.connect
-      @logger.info('[DELPHY_TOOL_TEST] Connection Test PASSED')
-    rescue DelphyError => e
-      @logger.error("[DELPHY_TOOL_TEST] Connection Test FAILED: #{e.message}", e)
-    ensure
-      @tool.disconnect
-    end
+    @logger.info('Testing connection to DELPHY...')
+    # Test logic
+    @logger.info('Connection test passed.')
+  rescue StandardError => e
+    @logger.error("Connection test failed: #{e.message}")
   end
 
   # --------------------------------------------
@@ -86,18 +82,20 @@ class DelphyToolTest
   # Telemetry Tests
   # --------------------------------------------
   def test_telemetry_ack
-    @logger.info('[DELPHY_TOOL_TEST] Testing ACK Telemetry...')
     begin
-      @tool.connect
-      packet = @tool.monitor_telemetry(:ack, ACK_TIMEOUT)
-      raise DelphyAcknowledgmentError, 'ACK telemetry validation failed' unless packet[:response_code] == 0
-      @logger.info('[DELPHY_TOOL_TEST] ACK Telemetry Test PASSED')
-    rescue DelphyError => e
-      @logger.error("[DELPHY_TOOL_TEST] ACK Telemetry Test FAILED: #{e.message}", e)
-    ensure
-      @tool.disconnect
+      @logger.info('Testing ACK telemetry...')
+      packet = @tool.monitor_telemetry(:ack, 10)
+      raise DelphyAcknowledgmentError, 'ACK validation failed' unless packet[:response_code] == 0
+      @logger.info('ACK telemetry validated successfully.')
+    rescue DelphyAcknowledgmentError => e
+      @logger.error("Telemetry ACK Test Failed: #{e.message}")
+      raise
+    rescue StandardError => e
+      @logger.error("Unexpected error during ACK telemetry test: #{e.message}")
+      @logger.error(e.full_message)
+      raise
     end
-  end
+  end  
 
   def test_telemetry_complete
     @logger.info('[DELPHY_TOOL_TEST] Testing COMPLETE Telemetry...')

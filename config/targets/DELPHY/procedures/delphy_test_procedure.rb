@@ -31,11 +31,11 @@ class DelphyTestProcedure
   ## 1. Connectivity Test
   def test_connectivity
     begin
-      @logger.log_info('Testing DELPHY connectivity...')
+      @logger.info('Testing DELPHY connectivity...')
       @tool.connect
-      @logger.log_info('Connectivity test PASSED.')
+      @logger.info('Connectivity test PASSED.')
     rescue DelphyConnectionError => e
-      @logger.log_error("Connectivity test FAILED: #{e.message}")
+      @logger.error("Connectivity test FAILED: #{e.message}")
       raise
     ensure
       @tool.disconnect
@@ -45,13 +45,13 @@ class DelphyTestProcedure
   ## 2. Command Execution Test
   def test_command_execution
     begin
-      @logger.log_info('Testing command execution...')
+      @logger.info('Testing command execution...')
       @tool.connect
       @tool.run_script(1, 42.0)
       @tool.send_message(0, 'Command execution test message')
-      @logger.log_info('Command execution test PASSED.')
+      @logger.info('Command execution test PASSED.')
     rescue DelphyCommandError => e
-      @logger.log_error("Command execution test FAILED: #{e.message}")
+      @logger.error("Command execution test FAILED: #{e.message}")
       raise
     ensure
       @tool.disconnect
@@ -61,7 +61,7 @@ class DelphyTestProcedure
   ## 3. Telemetry Test
   def test_telemetry
     begin
-      @logger.log_info('Testing telemetry reception...')
+      @logger.info('Testing telemetry reception...')
       @tool.connect
       ack_packet = @tool.monitor_telemetry(:ack, ACK_TIMEOUT)
       complete_packet = @tool.monitor_telemetry(:complete, COMPLETE_TIMEOUT)
@@ -74,9 +74,9 @@ class DelphyTestProcedure
         raise DelphyAcknowledgmentError, 'Invalid COMPLETE telemetry response.'
       end
 
-      @logger.log_info('Telemetry test PASSED.')
+      @logger.info('Telemetry test PASSED.')
     rescue DelphyTelemetryTimeoutError => e
-      @logger.log_error("Telemetry test FAILED: #{e.message}")
+      @logger.error("Telemetry test FAILED: #{e.message}")
       raise
     ensure
       @tool.disconnect
@@ -86,12 +86,12 @@ class DelphyTestProcedure
   ## 4. System Reset Test
   def test_system_reset
     begin
-      @logger.log_info('Testing system reset...')
+      @logger.info('Testing system reset...')
       @tool.connect
       @tool.reset_system(0, 'System reset during test')
-      @logger.log_info('System reset test PASSED.')
+      @logger.info('System reset test PASSED.')
     rescue DelphyCommandError => e
-      @logger.log_error("System reset test FAILED: #{e.message}")
+      @logger.error("System reset test FAILED: #{e.message}")
       raise
     ensure
       @tool.disconnect
@@ -101,13 +101,13 @@ class DelphyTestProcedure
   ## 5. Error Handling Test
   def test_error_handling
     begin
-      @logger.log_info('Testing error handling with invalid command...')
+      @logger.info('Testing error handling with invalid command...')
       @tool.connect
       DelphyHelper.send_command(TARGET, 'INVALID_COMMAND')
     rescue DelphyCommandError => e
-      @logger.log_info("Error handling test PASSED: #{e.message}")
+      @logger.info("Error handling test PASSED: #{e.message}")
     rescue StandardError => e
-      @logger.log_error("Error handling test FAILED: #{e.message}")
+      @logger.error("Error handling test FAILED: #{e.message}")
       raise
     ensure
       @tool.disconnect
@@ -117,12 +117,12 @@ class DelphyTestProcedure
   ## 6. Diagnostics Test
   def test_diagnostics
     begin
-      @logger.log_info('Testing diagnostics...')
+      @logger.info('Testing diagnostics...')
       @tool.connect
       @tool.perform_diagnostics
-      @logger.log_info('Diagnostics test PASSED.')
+      @logger.info('Diagnostics test PASSED.')
     rescue DelphyError => e
-      @logger.log_error("Diagnostics test FAILED: #{e.message}")
+      @logger.error("Diagnostics test FAILED: #{e.message}")
       raise
     ensure
       @tool.disconnect
@@ -132,12 +132,12 @@ class DelphyTestProcedure
   ## 7. Configuration Validation Test
   def test_configuration
     begin
-      @logger.log_info('Validating configuration parameters...')
+      @logger.info('Validating configuration parameters...')
       @tool.connect
       DelphyHelper.validate_parameter(50.0, 0.0, 100.0)
-      @logger.log_info('Configuration validation PASSED.')
+      @logger.info('Configuration validation PASSED.')
     rescue DelphyConfigurationError => e
-      @logger.log_error("Configuration validation FAILED: #{e.message}")
+      @logger.error("Configuration validation FAILED: #{e.message}")
       raise
     ensure
       @tool.disconnect
@@ -148,7 +148,7 @@ class DelphyTestProcedure
   # FULL TEST SUITE
   # --------------------------------------------
   def run_all_tests
-    @logger.log_info('Starting DELPHY Full Test Suite...')
+    @logger.info('Starting DELPHY Full Test Suite...')
     begin
       test_connectivity
       test_command_execution
@@ -157,9 +157,9 @@ class DelphyTestProcedure
       test_error_handling
       test_diagnostics
       test_configuration
-      @logger.log_info('DELPHY Full Test Suite COMPLETED successfully.')
+      @logger.info('DELPHY Full Test Suite COMPLETED successfully.')
     rescue DelphyError => e
-      @logger.log_error("Test suite FAILED: #{e.message}")
+      @logger.error("Test suite FAILED: #{e.message}")
     ensure
       @tool.disconnect
       @logger.close_logger
@@ -214,7 +214,7 @@ class DelphyTestProcedure
     puts "\nExiting session..."
     @tool.disconnect
   rescue StandardError => e
-    @logger.log_error("Interactive session error: #{e.message}")
+    @logger.error("Interactive session error: #{e.message}")
     puts "Error: #{e.message}"
   ensure
     @logger.close_logger

@@ -7,15 +7,15 @@ RSpec.describe DelphyToolLogger do
   end
 
   it 'logs info messages correctly' do
-    expect { @logger.log_info('Info log test') }.not_to raise_error
+    expect { @logger.info('Info log test') }.not_to raise_error
   end
 
   it 'logs error messages correctly' do
-    expect { @logger.log_error('Error log test') }.not_to raise_error
+    expect { @logger.error('Error log test') }.not_to raise_error
   end
 
   it 'handles invalid log levels gracefully' do
-    expect { @logger.log_debug(nil) }.not_to raise_error
+    expect { @logger.debug(nil) }.not_to raise_error
   end
 
   after(:each) do

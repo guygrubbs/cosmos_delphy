@@ -30,11 +30,11 @@ class DelphyValidationProcedure
   # 1. Validate Connection
   def validate_connection
     begin
-      @logger.log_info('Validating DELPHY connection...')
+      @logger.info('Validating DELPHY connection...')
       @tool.connect
-      @logger.log_info('Connection validation PASSED.')
+      @logger.info('Connection validation PASSED.')
     rescue DelphyError => e
-      @logger.log_error("Connection validation FAILED: #{e.message}")
+      @logger.error("Connection validation FAILED: #{e.message}")
       raise
     ensure
       @tool.disconnect
@@ -44,16 +44,16 @@ class DelphyValidationProcedure
   # 2. Validate Command Execution
   def validate_command_execution
     begin
-      @logger.log_info('Validating RUN_SCRIPT command...')
+      @logger.info('Validating RUN_SCRIPT command...')
       @tool.connect
       @tool.run_script(1, 123.45)
-      @logger.log_info('RUN_SCRIPT command validation PASSED.')
+      @logger.info('RUN_SCRIPT command validation PASSED.')
 
-      @logger.log_info('Validating SEND_MESSAGE command...')
+      @logger.info('Validating SEND_MESSAGE command...')
       @tool.send_message(0, 'Validation message from DELPHY_VALIDATION')
-      @logger.log_info('SEND_MESSAGE command validation PASSED.')
+      @logger.info('SEND_MESSAGE command validation PASSED.')
     rescue DelphyError => e
-      @logger.log_error("Command validation FAILED: #{e.message}")
+      @logger.error("Command validation FAILED: #{e.message}")
       raise
     ensure
       @tool.disconnect
@@ -63,7 +63,7 @@ class DelphyValidationProcedure
   # 3. Validate Telemetry
   def validate_telemetry
     begin
-      @logger.log_info('Validating telemetry reception...')
+      @logger.info('Validating telemetry reception...')
       @tool.connect
       ack_packet = @tool.monitor_telemetry(:ack, ACK_TIMEOUT)
       complete_packet = @tool.monitor_telemetry(:complete, COMPLETE_TIMEOUT)
@@ -76,9 +76,9 @@ class DelphyValidationProcedure
         raise DelphyAcknowledgmentError, 'Invalid COMPLETE telemetry response.'
       end
 
-      @logger.log_info('Telemetry validation PASSED.')
+      @logger.info('Telemetry validation PASSED.')
     rescue DelphyError => e
-      @logger.log_error("Telemetry validation FAILED: #{e.message}")
+      @logger.error("Telemetry validation FAILED: #{e.message}")
       raise
     ensure
       @tool.disconnect
@@ -88,13 +88,13 @@ class DelphyValidationProcedure
   # 4. Validate Error Handling
   def validate_error_handling
     begin
-      @logger.log_info('Validating invalid command handling...')
+      @logger.info('Validating invalid command handling...')
       @tool.connect
       DelphyHelper.send_command(TARGET, 'INVALID_COMMAND')
     rescue DelphyCommandError => e
-      @logger.log_info("Invalid command handling validation PASSED: #{e.message}")
+      @logger.info("Invalid command handling validation PASSED: #{e.message}")
     rescue StandardError => e
-      @logger.log_error("Invalid command handling validation FAILED: #{e.message}")
+      @logger.error("Invalid command handling validation FAILED: #{e.message}")
       raise
     ensure
       @tool.disconnect
@@ -104,12 +104,12 @@ class DelphyValidationProcedure
   # 5. Validate System Reset
   def validate_system_reset
     begin
-      @logger.log_info('Validating system reset command...')
+      @logger.info('Validating system reset command...')
       @tool.connect
       @tool.reset_system(0, 'Validation Reset')
-      @logger.log_info('System reset validation PASSED.')
+      @logger.info('System reset validation PASSED.')
     rescue DelphyError => e
-      @logger.log_error("System reset validation FAILED: #{e.message}")
+      @logger.error("System reset validation FAILED: #{e.message}")
       raise
     ensure
       @tool.disconnect
@@ -119,12 +119,12 @@ class DelphyValidationProcedure
   # 6. Validate Diagnostics
   def validate_diagnostics
     begin
-      @logger.log_info('Validating diagnostics command...')
+      @logger.info('Validating diagnostics command...')
       @tool.connect
       @tool.perform_diagnostics
-      @logger.log_info('Diagnostics validation PASSED.')
+      @logger.info('Diagnostics validation PASSED.')
     rescue DelphyError => e
-      @logger.log_error("Diagnostics validation FAILED: #{e.message}")
+      @logger.error("Diagnostics validation FAILED: #{e.message}")
       raise
     ensure
       @tool.disconnect
@@ -134,12 +134,12 @@ class DelphyValidationProcedure
   # 7. Validate Configuration
   def validate_configuration
     begin
-      @logger.log_info('Validating DELPHY system configuration parameters...')
+      @logger.info('Validating DELPHY system configuration parameters...')
       @tool.connect
       DelphyHelper.validate_parameter(50.0, 0.0, 100.0)
-      @logger.log_info('System configuration validation PASSED.')
+      @logger.info('System configuration validation PASSED.')
     rescue DelphyError => e
-      @logger.log_error("Configuration validation FAILED: #{e.message}")
+      @logger.error("Configuration validation FAILED: #{e.message}")
       raise
     ensure
       @tool.disconnect
@@ -150,7 +150,7 @@ class DelphyValidationProcedure
   # VALIDATION WORKFLOW
   # --------------------------------------------
   def perform_validation
-    @logger.log_info('Starting DELPHY Validation Procedure...')
+    @logger.info('Starting DELPHY Validation Procedure...')
     begin
       validate_connection
       validate_command_execution
@@ -159,9 +159,9 @@ class DelphyValidationProcedure
       validate_system_reset
       validate_diagnostics
       validate_configuration
-      @logger.log_info('DELPHY Validation Procedure COMPLETED successfully.')
+      @logger.info('DELPHY Validation Procedure COMPLETED successfully.')
     rescue DelphyError => e
-      @logger.log_error("Validation Procedure FAILED: #{e.message}")
+      @logger.error("Validation Procedure FAILED: #{e.message}")
     ensure
       @tool.disconnect
       @logger.close_logger
@@ -216,7 +216,7 @@ class DelphyValidationProcedure
     puts "\nExiting session..."
     @tool.disconnect
   rescue StandardError => e
-    @logger.log_error("Interactive session encountered an error: #{e.message}")
+    @logger.error("Interactive session encountered an error: #{e.message}")
     puts "Error: #{e.message}"
   ensure
     @logger.close_logger
