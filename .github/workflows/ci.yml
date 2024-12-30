@@ -1,5 +1,5 @@
 # .github/workflows/ci.yml
-# DELPHY CI/CD Pipeline with Docker Build on GitHub Actions
+# DELPHY CI/CD Pipeline with Docker Build and Deployment on GitHub Actions
 
 name: DELPHY CI/CD Pipeline
 
@@ -21,11 +21,14 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Authenticate with GitHub Container Registry
-        run: echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+        run: echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u guygrubbs --password-stdin
 
-      - name: Build and Push Docker Image
+      - name: Build Docker Image
         run: |
           docker build -t ghcr.io/guygrubbs/cosmos_delphy:latest .
+      
+      - name: Push Docker Image to GHCR
+        run: |
           docker push ghcr.io/guygrubbs/cosmos_delphy:latest
 
       - name: Verify Docker Image
@@ -51,6 +54,7 @@ jobs:
           bundler -v
           qmake --version
           cmake --version
+          rspec --version
 
   lint:
     name: Code Linting

@@ -1,4 +1,5 @@
-# Dockerfile for COSMOS CI Environment with Qt4
+# Dockerfile for COSMOS CI Environment with Qt5 and RSpec
+
 FROM ubuntu:20.04
 
 # Set Environment Variables
@@ -9,7 +10,8 @@ RUN apt-get update && apt-get install -y \
     build-essential \
     cmake \
     pkg-config \
-    libqt4-dev \
+    qt5-default \
+    libqt5widgets5 \
     ruby-full \
     bundler \
     git \
@@ -22,11 +24,11 @@ RUN apt-get update && apt-get install -y \
     libxrender-dev \
     libxcb1-dev \
     libxcb-glx0-dev \
-    rspec \
     && apt-get clean
 
-# Install Bundler 1.17.3
+# Install Ruby Gems
 RUN gem install bundler -v 1.17.3
+RUN gem install rspec
 
 # Set working directory
 WORKDIR /app
@@ -38,6 +40,6 @@ COPY . /app
 RUN bundle _1.17.3_ install
 
 # Validate installation
-RUN ruby -v && bundler -v && qmake --version && cmake --version
+RUN ruby -v && bundler -v && cmake --version && qmake --version
 
 CMD ["/bin/bash"]
