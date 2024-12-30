@@ -14,7 +14,7 @@ on:
 jobs:
   setup:
     name: Environment Setup
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04  # Use Ubuntu 20.04 for Qt4 compatibility
 
     steps:
       - name: Checkout Repository
@@ -52,7 +52,7 @@ jobs:
 
   lint:
     name: Code Linting
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     needs: setup
 
     steps:
@@ -65,7 +65,7 @@ jobs:
 
   unit_tests:
     name: Unit Tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     needs: setup
 
     steps:
@@ -78,7 +78,7 @@ jobs:
 
   integration_tests:
     name: Integration Tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     needs: setup
 
     steps:
@@ -91,7 +91,7 @@ jobs:
 
   deployment:
     name: Deployment
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     needs: [lint, unit_tests, integration_tests]
     if: github.ref == 'refs/heads/main'
 
@@ -110,7 +110,7 @@ jobs:
 
   finalize:
     name: Finalization
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     needs: deployment
 
     steps:
