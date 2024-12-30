@@ -20,12 +20,23 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Add Qt4 Repository
+      - name: Install Build Tools and Dependencies
         run: |
-          echo "Adding Qt4 repository from Ubuntu 20.04 (Focal)"
-          sudo add-apt-repository "deb http://archive.ubuntu.com/ubuntu focal main universe"
           sudo apt-get update
-          sudo apt-get install -y libqt4-dev cmake build-essential pkg-config
+          sudo apt-get install -y build-essential cmake pkg-config libfontconfig1-dev libfreetype6-dev \
+          libx11-dev libxext-dev libxfixes-dev libxrender-dev libxcb1-dev libxcb-glx0-dev libglib2.0-dev
+
+      - name: Build Qt4 from Source
+        run: |
+          wget https://download.qt.io/archive/qt/4.8/4.8.7/qt-everywhere-opensource-src-4.8.7.tar.gz
+          tar -xvf qt-everywhere-opensource-src-4.8.7.tar.gz
+          cd qt-everywhere-opensource-src-4.8.7
+          ./configure -opensource -confirm-license -prefix /usr/local/qt4
+          make -j$(nproc)
+          sudo make install
+          echo 'export PATH=/usr/local/qt4/bin:$PATH' >> ~/.bashrc
+          source ~/.bashrc
+          qmake --version
 
       - name: Install Ruby
         uses: ruby/setup-ruby@v1
