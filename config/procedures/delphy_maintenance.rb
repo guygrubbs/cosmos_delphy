@@ -111,7 +111,7 @@ class DelphyMaintenance
   def clean_logs
     begin
       @logger.info('Cleaning old logs...')
-      log_dir = 'config/tools/delphy_tool/logs'
+      log_dir = 'config/targets/DELPHY/tools/logs'
       Dir.glob("#{log_dir}/*.log").each do |file|
         File.delete(file)
         @logger.info("Deleted log file: #{file}")

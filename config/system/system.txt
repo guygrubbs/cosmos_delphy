@@ -43,7 +43,7 @@ LOGGING_ENABLED: TRUE
 LOGGING_LEVEL: INFO
 LOGGING_CONSOLE_OUTPUT: TRUE
 LOGGING_FILE_OUTPUT: TRUE
-LOGGING_FILE_PATH: config/tools/delphy_tool/logs/system.log
+LOGGING_FILE_PATH: config/targets/DELPHY/tools/logs/system.log
 LOGGING_FILE_ROTATION: DAILY
 LOGGING_MAX_FILE_SIZE: 10MB
 LOGGING_MAX_BACKUP_FILES: 5
@@ -59,7 +59,7 @@ ALERT_NOTIFICATION_CHANNELS: EMAIL, CONSOLE
 ALERT_EMAIL_RECIPIENTS: kolton.dieckow@swri.org, guygrubbs@gmail.com
 ALERT_ESCALATION_RECIPIENTS: kolton.dieckow@swri.org, guygrubbs@gmail.com
 ALERT_EMAIL_SUBJECT: "DELPHY System Alert"
-ALERT_EMAIL_TEMPLATE: config/tools/delphy_tool/templates/alert_email_template.txt
+ALERT_EMAIL_TEMPLATE: config/targets/DELPHY/tools/templates/alert_email_template.txt
 
 # --------------------------------------------
 # SESSION SETTINGS
@@ -74,7 +74,7 @@ SESSION_AUTO_RECONNECT: TRUE
 CACHE_ENABLED: TRUE
 CACHE_MAX_SIZE: 5000
 CACHE_EVICTION_POLICY: LRU
-CACHE_FILE: config/tools/delphy_tool/cache/telemetry_cache.dat
+CACHE_FILE: config/targets/DELPHY/tools/cache/telemetry_cache.dat
 CACHE_PERSISTENCE_ENABLED: TRUE
 
 # --------------------------------------------

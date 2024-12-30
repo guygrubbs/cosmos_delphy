@@ -1,0 +1,80 @@
+# .github/workflows/ci.yml
+name: DELPHY CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  setup:
+    name: Environment Setup
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Install Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '2.7'
+          bundler-cache: true
+
+      - name: Install Dependencies
+        run: |
+          gem install bundler -v 1.17.3
+          bundle _1.17.3_ install
+
+      - name: Validate Dependencies
+        run: |
+          ruby -v
+          bundler -v
+
+  lint:
+    name: Code Linting
+    runs-on: ubuntu-latest
+    needs: setup
+
+    steps:
+      - name: Run RuboCop
+        run: |
+          bundle exec rubocop
+
+  unit_tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    needs: setup
+
+    steps:
+      - name: Run Unit Tests
+        run: |
+          bundle exec rspec tests/targets/DELPHY --format documentation
+
+  integration_tests:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    needs: setup
+
+    steps:
+      - name: Run Integration Tests
+        run: |
+          bundle exec rspec tests/targets/DELPHY/integration_test.rb --format documentation
+
+deployment:
+  name: Deployment
+  runs-on: ubuntu-latest
+  needs: [lint, unit_tests, integration_tests]
+  if: github.ref == 'refs/heads/main'
+
+  steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+
+    - name: Run Deployment Script
+      run: |
+        chmod +x deploy.sh
+        sudo ./deploy.sh

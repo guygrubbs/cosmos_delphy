@@ -14,7 +14,7 @@ require_relative '../../lib/delphy_errors'
 class DelphyToolLogger
   include DelphyConstants
 
-  LOG_DIRECTORY = 'config/tools/delphy_tool/logs'.freeze
+  LOG_DIRECTORY = 'config/targets/DELPHY/tools/logs'.freeze
   LOG_FILE = "#{LOG_DIRECTORY}/delphy_tool.log".freeze
 
   def initialize
