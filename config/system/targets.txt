@@ -1,18 +1,49 @@
 # config/system/targets.txt
+# COSMOS v4 System Targets Configuration File
 
-# Declare Global System Targets
-
+# --------------------------------------------
+# GLOBAL SYSTEM TARGET
+# --------------------------------------------
 DECLARE_TARGET GLOBAL
 DESCRIPTION "System-wide global target for health monitoring and utilities."
 
-# Declare DELPHY Target
+# --------------------------------------------
+# DELPHY TARGET
+# --------------------------------------------
+# The DELPHY target represents a standalone module configured
+# for communication, command execution, telemetry, and error handling.
 
 DECLARE_TARGET DELPHY
-DESCRIPTION "Target configuration for DELPHY system."
+DESCRIPTION "Target configuration for the DELPHY system."
+
+# Configuration File:
+# Defines system-level settings, initial parameters, and global defaults for DELPHY.
 CONFIG_FILE config/targets/DELPHY/config.txt
+
+# Defaults File:
+# Specifies default values for command parameters and telemetry settings.
 DEFAULTS_FILE config/targets/DELPHY/defaults.txt
+
+# Interfaces File:
+# Details interface configurations for communication protocols (e.g., TCP/IP).
 INTERFACES_FILE config/targets/DELPHY/interfaces.txt
+
+# Metadata File:
+# Provides metadata definitions for DELPHY commands and telemetry.
 METADATA_FILE config/targets/DELPHY/metadata.txt
+
+# Monitors File:
+# Contains monitoring rules and validation logic for telemetry data.
 MONITORS_FILE config/targets/DELPHY/monitors.txt
 
-# Tool-specific configurations for DELPHY are now in /config/targets/DELPHY/tools/
+# Tools Configuration:
+# DELPHY-specific tools are configured in their dedicated tools file.
+TOOLS_FILE config/targets/DELPHY/tools.txt
+
+# Logging:
+# Logs related to DELPHY target operations are stored in the target-specific logs directory.
+LOG_DIRECTORY config/targets/DELPHY/logs
+
+# --------------------------------------------
+# END OF TARGETS CONFIGURATION
+# --------------------------------------------

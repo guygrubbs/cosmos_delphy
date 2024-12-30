@@ -1,177 +1,41 @@
-# Gemfile
-# DELPHY COSMOS v4 Deployment Gemfile
-# Defines dependencies required for DELPHY tools, procedures, and workflows.
+# Gemfile for DELPHY COSMOS v4 Deployment
+# Defines dependencies for DELPHY tools, aligned with COSMOS v4 requirements.
+
+source 'https://rubygems.org'
 
 # --------------------------------------------
-# RUBY VERSION
+# COSMOS Core Dependencies
 # --------------------------------------------
-ruby '3.1.2'
+gem 'cosmos', '~> 4.0'    # COSMOS framework version 4.x
+gem 'qtbindings', '~> 4.8' # Required for GUI components in COSMOS tools
+gem 'json', '~> 2.6'       # JSON library for configuration and telemetry parsing
+gem 'logger', '~> 1.6'     # Standard Ruby logger with enhancements
 
 # --------------------------------------------
-# COSMOS CORE
+# Development and Debugging Tools
 # --------------------------------------------
-# Core COSMOS framework for command, telemetry, and scripting
-gem 'cosmos', '~> 4.0'
-gem 'cosmos-tool-runner', '~> 4.0'
-gem 'cosmos-procedure-engine', '~> 4.0'
+gem 'pry', '~> 0.14'       # Interactive Ruby shell for debugging
+gem 'rspec', '~> 3.12'     # Testing framework for unit and integration tests
+gem 'rubocop', '~> 1.40'   # Ruby linter for consistent code style
 
 # --------------------------------------------
-# NETWORK COMMUNICATION
+# Networking and Communication
 # --------------------------------------------
-# Libraries for managing TCP/IP communication
-gem 'net-telnet', '~> 0.2.0'
-gem 'socketry', '~> 0.5.1'
+gem 'net-telnet', '~> 0.2' # Networking library for TCP/IP communication
+gem 'faraday', '~> 1.10'   # HTTP client for telemetry or REST integrations
 
 # --------------------------------------------
-# PARSING AND SERIALIZATION
+# Security and Environment Management
 # --------------------------------------------
-# YAML and JSON parsing libraries
-gem 'psych', '~> 4.0'
-gem 'json', '~> 2.6'
+gem 'dotenv', '~> 2.8'     # Environment variable management for secure credentials
 
 # --------------------------------------------
-# LOGGING
+# Additional Utilities
 # --------------------------------------------
-# Structured logging libraries
-gem 'logger', '~> 1.6'
-gem 'lograge', '~> 0.12.0'
+gem 'fileutils', '~> 1.7'  # File and directory manipulation utilities
+gem 'highline', '~> 2.0'   # Command-line interface enhancements
 
 # --------------------------------------------
-# ERROR HANDLING
+# Ruby Version Compatibility
 # --------------------------------------------
-# Error monitoring and structured exception handling
-gem 'sentry-raven', '~> 3.1'
-
-# --------------------------------------------
-# SCHEDULING AND AUTOMATION
-# --------------------------------------------
-# Cron-style scheduling and task automation
-gem 'rufus-scheduler', '~> 3.8'
-
-# --------------------------------------------
-# SYSTEM MONITORING
-# --------------------------------------------
-# Tools for monitoring system resources
-gem 'sys-proctable', '~> 1.2'
-gem 'sys-filesystem', '~> 1.4'
-
-# --------------------------------------------
-# DATA MANAGEMENT AND CACHING
-# --------------------------------------------
-# Libraries for managing in-memory cache and persistence
-gem 'redis', '~> 4.8'
-gem 'dalli', '~> 3.2' # Memcached client
-
-# --------------------------------------------
-# SECURITY
-# --------------------------------------------
-# Encryption, hashing, and security utilities
-gem 'openssl', '~> 3.0'
-gem 'bcrypt', '~> 3.1.18'
-
-# --------------------------------------------
-# MAILER FOR ALERTS
-# --------------------------------------------
-# Send alert notifications via email
-gem 'mail', '~> 2.8'
-
-# --------------------------------------------
-# COMMAND LINE INTERFACE
-# --------------------------------------------
-# Command-line scripting support
-gem 'thor', '~> 1.2'
-
-# --------------------------------------------
-# FILE MANAGEMENT
-# --------------------------------------------
-# Utilities for managing files and logs
-gem 'fileutils', '~> 1.7'
-gem 'zip', '~> 3.0'
-
-# --------------------------------------------
-# TESTING AND VALIDATION
-# --------------------------------------------
-# Unit and integration testing frameworks
-gem 'rspec', '~> 3.12'
-gem 'minitest', '~> 5.15'
-
-# --------------------------------------------
-# DOCUMENTATION
-# --------------------------------------------
-# Documentation generation tools
-gem 'yard', '~> 0.9.34'
-
-# --------------------------------------------
-# DATABASE SUPPORT (Optional)
-# --------------------------------------------
-# For optional telemetry database storage
-gem 'sqlite3', '~> 1.6'
-gem 'activerecord', '~> 7.0'
-
-# --------------------------------------------
-# DEVELOPMENT TOOLS
-# --------------------------------------------
-# Debugging and code inspection tools
-gem 'pry', '~> 0.14'
-gem 'byebug', '~> 11.1'
-
-# --------------------------------------------
-# VERSION CONTROL
-# --------------------------------------------
-# Git integration library
-gem 'rugged', '~> 1.4'
-
-# --------------------------------------------
-# ENVIRONMENT MANAGEMENT
-# --------------------------------------------
-# Manage application-level environment variables
-gem 'dotenv', '~> 2.8'
-gem 'dotenv-rails', '~> 2.8'
-
-# --------------------------------------------
-# DEPLOYMENT TOOLS
-# --------------------------------------------
-# Deployment automation tools
-gem 'capistrano', '~> 3.17'
-gem 'capistrano-rails', '~> 1.6'
-gem 'puma', '~> 5.6'
-gem 'unicorn', '~> 6.1'
-
-# --------------------------------------------
-# PERFORMANCE MONITORING
-# --------------------------------------------
-# Libraries for monitoring performance
-gem 'newrelic_rpm', '~> 8.10'
-
-# --------------------------------------------
-# DEVELOPMENT GROUP
-# --------------------------------------------
-group :development do
-  gem 'rubocop', '~> 1.51'
-  gem 'brakeman', '~> 5.6'
-  gem 'solargraph', '~> 0.44'
-end
-
-# --------------------------------------------
-# PRODUCTION GROUP
-# --------------------------------------------
-group :production do
-  gem 'puma', '~> 5.6'
-  gem 'unicorn', '~> 6.1'
-end
-
-# --------------------------------------------
-# TEST GROUP
-# --------------------------------------------
-group :test do
-  gem 'rspec-rails', '~> 5.0'
-  gem 'capybara', '~> 3.39'
-end
-
-# --------------------------------------------
-# LOAD ENVIRONMENT VARIABLES
-# --------------------------------------------
-# Ensure environment variables are properly loaded
-group :default do
-  gem 'bundler', '~> 2.4'
-end
+ruby '2.7.8'

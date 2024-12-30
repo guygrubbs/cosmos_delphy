@@ -1,6 +1,6 @@
 # **DELPHY COSMOS v4 Deployment**
 
-**Version:** 1.0.2  
+**Version:** 1.1.0  
 **Last Updated:** 2024-12-30  
 **Maintainer:** DELPHY Operations Team  
 **Support Contact:** [guygrubbs@gmail.com](mailto:guygrubbs@gmail.com)  
@@ -22,206 +22,201 @@ Welcome to the **DELPHY COSMOS v4 Deployment Repository**. This repository conta
 - **Diagnostics:** Regular system health checks and alerts.  
 - **Workflow Automation:** Predefined procedures for recurring tasks.  
 - **Error Handling:** Proactive error detection and alert escalation.  
-- **Security:** Authentication, encryption, and IP-based access controls.  
+- **Logging:** Structured, detailed logs for troubleshooting.  
 
 ### **2.2 Architecture Overview**
 
 - **Communication Interfaces:** TCP/IP and Serial (fallback).  
 - **Configuration Files:** Centralized settings for commands, telemetry, and error handling.  
 - **Logging:** Structured logging with rotation and alert integration.  
-- **Caching:** Telemetry caching with Redis/Memcached.  
 - **Monitoring:** Automated system health checks and validation workflows.  
 
 ---
 
-## **3. Directory Structure**
+## **3. Prerequisites**
 
-The repository follows the **COSMOS v4 recommended directory layout**:
+Ensure the following prerequisites are met before proceeding:
 
-```plaintext
-C:.
-│   Gemfile          # Ruby dependencies
-│   README.md        # Deployment documentation
-│
-├───.vscode          # Development environment settings
-│       launch.json
-│
-├───config           # Main COSMOS configuration directory
-│   ├───logs         # System and tool logs
-│   │       cosmos.log
-│   │       delphy_tool.log
-│   │       telemetry.log
-│   │
-│   ├───procedures   # Automation and diagnostic procedures
-│   │       delphy_maintenance.rb
-│   │       delphy_script.rb
-│   │       delphy_test_run.rb
-│   │       delphy_validation_procedure.rb
-│   │
-│   ├───system       # System-wide configurations
-│   │       system.txt
-│   │       targets.txt
-│   │       tools.txt
-│   │
-│   ├───targets      # Target-specific configurations
-│   │   └───DELPHY
-│   │       │   config.txt
-│   │       │   defaults.txt
-│   │       │   interfaces.txt
-│   │       │   metadata.txt
-│   │       │   monitors.txt
-│   │       │
-│   │       ├───cmd_tlm        # Command and telemetry definitions
-│   │       │       commands.txt
-│   │       │       telemetry.txt
-│   │       │
-│   │       ├───documentation  # Documentation files
-│   │       │       command_reference.md
-│   │       │       DELPHY_User_Manual.pdf
-│   │       │       PCS_Network_Specification.pdf
-│   │       │
-│   │       ├───logs           # Target-specific logs
-│   │       │       ack.log
-│   │       │       complete.log
-│   │       │       delphy.log
-│   │       │
-│   │       └───procedures     # Target-specific procedures
-│   │               delphy_procedure_1.rb
-│   │               delphy_procedure_2.rb
-│   │               delphy_test_procedure.rb
-│   │
-│   └───tools
-│       └───delphy_tool        # DELPHY-specific tools
-│           │   delphy_script.rb
-│           │   delphy_tool_gui.rb
-│           │   delphy_tool_logger.rb
-│           │   delphy_tool_test.rb
-│           │
-│           └───configs        # Tool configurations
-│                   log_levels.yml
-│                   tool_config.json
-│                   tool_defaults.yml
-│
-├───lib             # Shared libraries
-│       delphy_constants.rb
-│       delphy_errors.rb
-│       delphy_helper.rb
-│       delphy_packet_parser.rb
-│       delphy_tool.rb
+- **COSMOS Version:** 4.0 or higher  
+- **Ruby Version:** 3.1.2  
+- **Bundler:** 2.4 or higher  
+- **Network Access:** Access to DELPHY's IP and Port (`129.162.153.79:14670`)  
+- **Access Permissions:** Ensure sufficient privileges for deployment and tool execution  
+
+---
+
+## **4. Directory Structure**
+
+```
+.
+├── config
+│   ├── logs
+│   ├── procedures
+│   │   ├── delphy_maintenance.rb
+│   │   ├── delphy_script.rb
+│   │   ├── delphy_test_run.rb
+│   │   ├── delphy_validation_procedure.rb
+│   ├── system
+│   │   ├── system.txt
+│   │   ├── targets.txt
+│   │   ├── tools.txt
+│   ├── targets
+│   │   ├── DELPHY
+│   │   │   ├── config.txt
+│   │   │   ├── defaults.txt
+│   │   │   ├── interfaces.txt
+│   │   │   ├── metadata.txt
+│   │   │   ├── monitors.txt
+│   │   │   ├── tools
+│   │   │   │   ├── delphy_script.rb
+│   │   │   │   ├── delphy_tool_gui.rb
+│   │   │   │   ├── delphy_tool_logger.rb
+│   │   │   │   ├── delphy_tool_test.rb
+│   │   │   ├── logs
+│   │   │   │   ├── ack.log
+│   │   │   │   ├── complete.log
+│   │   │   │   ├── delphy.log
+│   │   │   ├── procedures
+│   │   │   │   ├── delphy_procedure_1.rb
+│   │   │   │   ├── delphy_procedure_2.rb
+│   │   │   │   ├── delphy_test_procedure.rb
+├── lib
+│   ├── delphy_constants.rb
+│   ├── delphy_errors.rb
+│   ├── delphy_helper.rb
+│   ├── delphy_packet_parser.rb
+│   ├── delphy_tool.rb
 ```
 
 ---
 
-## **4. Installation**
+## **5. Installation**
 
-### **4.1 Clone the Repository**
+### **5.1 Clone the Repository**
 
 ```bash
 git clone https://github.com/guygrubbs/cosmos_delphy.git
 cd cosmos_delphy
 ```
 
-### **4.2 Install Dependencies**
+### **5.2 Install Dependencies**
+
+Ensure all Ruby gems are installed:
 
 ```bash
 gem install bundler
 bundle install
 ```
 
-### **4.3 Configure COSMOS**
+### **5.3 Configure COSMOS**
+
+Copy the configuration files to your COSMOS installation directory:
 
 ```bash
 cp -r config/* /path/to/cosmos/config/
 ```
 
-### **4.4 Environment Variables**
+### **5.4 Environment Variables**
 
-Create a `.env` file:
+Create a `.env` file in the root directory to manage environment variables:
+
 ```plaintext
 DELPHY_INTERFACE=TCPIP
 DELPHY_IP=129.162.153.79
 DELPHY_PORT=14670
 ```
 
-### **4.5 Verify Installation**
+### **5.5 Verify Installation**
+
+Start the DELPHY Tool:
 
 ```bash
-ruby tools/ScriptRunner -r config/tools/delphy_tool/delphy_tool_logger.rb
+ruby config/targets/DELPHY/tools/delphy_script.rb
 ```
 
-Logs:
+Check the logs at:
 ```plaintext
-config/tools/delphy_tool/logs/system.log
+config/targets/DELPHY/tools/logs/delphy_script.log
 ```
 
 ---
 
-## **5. Use Cases**
+## **6. Usage Instructions**
 
-### **5.1 Example Script Usage**
+### **6.1 Command-Line Tools**
+
+- **Run DELPHY Script:**
+```bash
+ruby config/targets/DELPHY/tools/delphy_script.rb workflow 1 123.45
+```
+
+- **Diagnostics:**
+```bash
+ruby config/targets/DELPHY/tools/delphy_script.rb diagnostics
+```
+
+### **6.2 GUI Tool**
+
+Run the DELPHY GUI tool:
+
+```bash
+ruby config/targets/DELPHY/tools/delphy_tool_gui.rb
+```
+
+---
+
+## **7. Testing and Validation**
+
+### **7.1 Run Tests**
+
+- **Run DELPHY Test Suite:**
+```bash
+ruby config/targets/DELPHY/tools/delphy_tool_test.rb
+```
+
+- **Verify Logs:**  
+  Check logs for errors or warnings:
+```plaintext
+config/targets/DELPHY/tools/logs/delphy_tool_test.log
+```
+
+### **7.2 Telemetry Validation**
+
+Run telemetry checks:
 
 ```ruby
-require 'cosmos'
-require 'cosmos/script'
-
-# Run a DELPHY Script
-cmd('DELPHY', 'RUN_SCRIPT', 'SCRIPT_ID' => 1, 'PARAMETER' => 123.45)
 wait_check('DELPHY METADATA SYSTEM_STATE == "NOMINAL"', 10)
 ```
 
-### **5.2 Integration in Test Runner**
+---
 
-```ruby
-require 'cosmos/tools/test_runner/test'
+## **8. Logging**
 
-class DelphyIntegrationTest < Cosmos::Test
-  def test_system_reset
-    cmd('DELPHY', 'RESET_SYSTEM', 'MODE' => 0, 'REASON' => 'Manual Reset')
-    wait_check('DELPHY METADATA SYSTEM_STATE == "NOMINAL"', 10)
-  end
-end
-```
+Logs are stored in:
 
-Run:
-```bash
-ruby config/procedures/delphy_test_run.rb
-```
+- **System Logs:** `config/targets/DELPHY/tools/logs/delphy_script.log`  
+- **GUI Logs:** `config/targets/DELPHY/tools/logs/delphy_gui.log`  
+- **Test Logs:** `config/targets/DELPHY/tools/logs/delphy_tool_test.log`  
 
-### **5.3 Cache Management**
-
-Clear Cache:
-```bash
-ruby scripts/cache_manager.rb clear
+Adjust logging levels in:
+```yaml
+config/targets/DELPHY/tools/configs/log_levels.yml
 ```
 
 ---
 
-## **6. Logging**
+## **9. Alerts and Notifications**
 
-- **System Logs:** `config/logs/cosmos.log`  
-- **Tool Logs:** `config/tools/delphy_tool/logs/delphy_tool.log`  
-- **Telemetry Logs:** `config/logs/telemetry.log`  
-
----
-
-## **7. Troubleshooting**
-
-- **Connection Issues:** Verify IP (`129.162.153.79`) and Port (`14670`).  
-- **Logs:** Inspect `config/logs/cosmos.log`.  
-- **Telemetry Check:** Ensure `wait_check` statements are validating telemetry correctly.
+- Alerts are sent via **Email** and **Console**.
+- Default recipients:
+  - `kolton.dieckow@swri.org`
+  - `admin@delphy.com`
+- Critical alerts escalate to:
+  - `escalation@delphy.com`
 
 ---
 
-## **8. Support**
-
-- **Support Team:** [guygrubbs@gmail.com](mailto:guygrubbs@gmail.com)  
-- **Operations Team:** [kolton.dieckow@swri.org](mailto:kolton.dieckow@swri.org)  
-
-Report bugs via [GitHub Issues](https://github.com/guygrubbs/cosmos_delphy/issues).  
-
----
-
-## **9. Contribution Guidelines**
+## **10. Contribution Guidelines**
 
 1. Fork the repository.  
 2. Create a feature branch: `git checkout -b feature-branch`.  
@@ -230,4 +225,10 @@ Report bugs via [GitHub Issues](https://github.com/guygrubbs/cosmos_delphy/issue
 
 ---
 
-This **README.md** now includes **directory structure**, **installation steps**, **tool use cases in scripts and tests**, **logging details**, and troubleshooting tips, providing a **comprehensive deployment guide**.
+## **11. License**
+
+This project is licensed under the **MIT License**. See `LICENSE` for details.
+
+---
+
+**This README.md serves as the central guide for DELPHY COSMOS v4 Deployment, ensuring clarity and accuracy across installation, configuration, usage, and validation.**
