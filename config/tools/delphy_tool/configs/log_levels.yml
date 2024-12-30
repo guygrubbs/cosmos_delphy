@@ -1,0 +1,79 @@
+# config/tools/delphy_tool/configs/log_levels.yml
+# DELPHY Log Levels Configuration
+# Defines log levels and their usage across DELPHY tools and procedures.
+
+log_levels:
+  - level: 0
+    name: INFO
+    description: Informational messages that provide general details about system operation.
+    usage: Used for normal system activity logs and successful command execution.
+
+  - level: 1
+    name: WARNING
+    description: Warning messages indicating non-critical issues that may require attention.
+    usage: Used when system behavior deviates from normal operation but does not halt execution.
+
+  - level: 2
+    name: ERROR
+    description: Error messages indicating critical issues that prevent command or procedure execution.
+    usage: Used when a failure occurs in a command, telemetry monitoring, or diagnostics.
+
+  - level: 3
+    name: DEBUG
+    description: Detailed debug information useful for troubleshooting and development.
+    usage: Enabled during development and debugging phases.
+
+  - level: 4
+    name: CRITICAL
+    description: Critical errors requiring immediate action or indicating a fatal issue.
+    usage: Used when system stability or safety is at risk.
+
+  - level: 5
+    name: JOURNAL
+    description: Persistent logs for long-term auditing and event recording.
+    usage: Used to record historical logs for auditing and compliance purposes.
+
+default_level: INFO
+
+# Module-Specific Log Levels
+modules:
+  connection:
+    default: INFO
+    description: Logs related to connection management and status.
+  commands:
+    default: INFO
+    description: Logs for command execution and validation.
+  telemetry:
+    default: INFO
+    description: Logs for telemetry data monitoring and validation.
+  diagnostics:
+    default: WARNING
+    description: Logs for system diagnostics and health checks.
+  error_handling:
+    default: ERROR
+    description: Logs for error recovery and exception handling.
+  workflow:
+    default: INFO
+    description: Logs for automated workflows and scripted procedures.
+
+# Logging Output Configuration
+output:
+  console: true
+  file: true
+  file_path: config/tools/delphy_tool/logs/delphy_tool.log
+  rotation: daily
+  max_file_size: 10MB
+  max_backup_files: 7
+  format: "[%LEVEL%] %TIMESTAMP% - %MODULE% - %MESSAGE%"
+  timestamp_format: "%Y-%m-%d %H:%M:%S"
+
+# Alerts
+alerts:
+  enabled: true
+  levels:
+    - ERROR
+    - CRITICAL
+  notification_channel: email
+  email_recipients:
+    - ops_team@delphy.com
+    - admin@delphy.com

@@ -1,0 +1,23 @@
+# config/targets/DELPHY/monitors.txt
+# DELPHY Telemetry and System Monitor Configuration
+
+# Monitor ACK Telemetry
+MONITOR ACK
+  CONDITION RESPONSE_CODE == 0
+  ACTION LOG "ACK received successfully."
+
+MONITOR COMPLETE
+  CONDITION STATUS_CODE == 0
+  ACTION LOG "Operation completed successfully."
+
+# Monitor Metadata Telemetry
+MONITOR METADATA
+  CONDITION SYSTEM_STATE == "NOMINAL"
+  ACTION LOG "System state is nominal."
+  ACTION ALERT "System is no longer nominal!" IF SYSTEM_STATE != "NOMINAL"
+
+# Monitor Error Counts
+MONITOR ERROR_COUNT
+  CONDITION ERROR_COUNT > 5
+  ACTION ALERT "High error count detected!"
+  ACTION RESET_SYSTEM MODE:0 REASON:"High Error Count"

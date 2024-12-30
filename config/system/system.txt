@@ -1,0 +1,189 @@
+# config/system/system.txt
+# COSMOS System Configuration for DELPHY Deployment
+# Defines global settings, targets, and operational parameters.
+
+# --------------------------------------------
+# SYSTEM CONFIGURATION
+# --------------------------------------------
+SYSTEM_NAME: DELPHY_SYSTEM
+DESCRIPTION: COSMOS system configuration for DELPHY integration and management.
+
+# --------------------------------------------
+# DEFAULT TARGET SETTINGS
+# --------------------------------------------
+DEFAULT_TARGET: DELPHY
+DEFAULT_INTERFACE: TCPIP
+DEFAULT_IP: 129.162.153.79
+DEFAULT_PORT: 14670
+CONNECTION_TIMEOUT: 5
+RETRY_COUNT: 3
+
+# --------------------------------------------
+# TELEMETRY SETTINGS
+# --------------------------------------------
+TELEMETRY_DEFAULT_TIMEOUT: 5
+TELEMETRY_ACK_TIMEOUT: 5
+TELEMETRY_COMPLETE_TIMEOUT: 10
+TELEMETRY_POLLING_INTERVAL: 60
+TELEMETRY_PACKET_SYNC: 0xDEADBEEF
+TELEMETRY_CACHE_SIZE: 1000
+
+# --------------------------------------------
+# COMMAND SETTINGS
+# --------------------------------------------
+COMMAND_TIMEOUT: 10
+COMMAND_RETRY_COUNT: 2
+COMMAND_LOG_LEVEL: INFO
+
+# --------------------------------------------
+# LOGGING SETTINGS
+# --------------------------------------------
+LOGGING_ENABLED: TRUE
+LOGGING_LEVEL: INFO
+LOGGING_CONSOLE_OUTPUT: TRUE
+LOGGING_FILE_OUTPUT: TRUE
+LOGGING_FILE_PATH: config/tools/delphy_tool/logs/system.log
+LOGGING_FILE_ROTATION: DAILY
+LOGGING_MAX_FILE_SIZE: 10MB
+LOGGING_MAX_BACKUP_FILES: 5
+LOGGING_TIMESTAMP_FORMAT: %Y-%m-%d %H:%M:%S
+LOGGING_FORMAT: "[%LEVEL%] %TIMESTAMP% - %MODULE% - %MESSAGE%"
+
+# --------------------------------------------
+# ALERT SETTINGS
+# --------------------------------------------
+ALERTS_ENABLED: TRUE
+ALERT_LEVELS: ERROR, CRITICAL
+ALERT_NOTIFICATION_CHANNELS: EMAIL, CONSOLE
+ALERT_EMAIL_RECIPIENTS: ops_team@delphy.com, admin@delphy.com
+ALERT_EMAIL_SUBJECT: "DELPHY System Alert"
+ALERT_EMAIL_TEMPLATE: config/tools/delphy_tool/templates/alert_email_template.txt
+
+# --------------------------------------------
+# WORKFLOW SETTINGS
+# --------------------------------------------
+WORKFLOW_TIMEOUT: 60
+WORKFLOW_RETRY_ATTEMPTS: 2
+WORKFLOW_DIAGNOSTICS_ENABLED: TRUE
+WORKFLOW_TELEMETRY_VALIDATION: TRUE
+WORKFLOW_ERROR_HANDLING: TRUE
+
+# --------------------------------------------
+# DIAGNOSTICS SETTINGS
+# --------------------------------------------
+DIAGNOSTICS_ENABLED: TRUE
+DIAGNOSTICS_INTERVAL: DAILY
+DIAGNOSTICS_RETRY_ATTEMPTS: 2
+DIAGNOSTICS_ALERT_ON_FAILURE: TRUE
+DIAGNOSTICS_EMAIL_RECIPIENTS: diagnostics@delphy.com, support@delphy.com
+
+# --------------------------------------------
+# SYSTEM RESET SETTINGS
+# --------------------------------------------
+SYSTEM_RESET_DEFAULT_MODE: 0
+SYSTEM_RESET_DEFAULT_REASON: "Scheduled Maintenance Reset"
+SYSTEM_RESET_TIMEOUT: 15
+SYSTEM_RESET_POST_VALIDATION: TRUE
+
+# --------------------------------------------
+# CACHE SETTINGS
+# --------------------------------------------
+CACHE_ENABLED: TRUE
+CACHE_MAX_SIZE: 5000
+CACHE_EVICTION_POLICY: LRU
+CACHE_FILE: config/tools/delphy_tool/cache/telemetry_cache.dat
+CACHE_PERSISTENCE_ENABLED: TRUE
+
+# --------------------------------------------
+# SESSION SETTINGS
+# --------------------------------------------
+SESSION_TIMEOUT: 1800
+SESSION_IDLE_DISCONNECT: TRUE
+SESSION_AUTO_RECONNECT: TRUE
+
+# --------------------------------------------
+# ERROR HANDLING
+# --------------------------------------------
+ERROR_MAX_RETRY_ATTEMPTS: 3
+ERROR_RETRY_DELAY: 2
+ERROR_ALERT_ON_FAILURE: TRUE
+
+# --------------------------------------------
+# MONITORING SETTINGS
+# --------------------------------------------
+MONITORING_ENABLED: TRUE
+MONITORING_INTERVAL: 60
+MONITORING_ERROR_THRESHOLD: 5
+MONITORING_ALERT_ON_EXCEED: TRUE
+MONITORING_NOTIFICATION_CHANNELS: EMAIL, CONSOLE
+
+# --------------------------------------------
+# MAINTENANCE SETTINGS
+# --------------------------------------------
+MAINTENANCE_SCHEDULED_RESET: TRUE
+MAINTENANCE_RESET_INTERVAL: WEEKLY
+MAINTENANCE_RESET_REASON: "Scheduled Maintenance"
+MAINTENANCE_DIAGNOSTICS_INTERVAL: DAILY
+MAINTENANCE_LOG_CLEANUP_INTERVAL: WEEKLY
+MAINTENANCE_MAX_LOG_AGE: 30
+
+# --------------------------------------------
+# SECURITY SETTINGS
+# --------------------------------------------
+SECURITY_ENABLE_AUTHENTICATION: TRUE
+SECURITY_ENABLE_ENCRYPTION: TRUE
+SECURITY_ALLOWED_IPS: 129.162.153.0/24
+SECURITY_LOG_INVALID_ACCESS: TRUE
+SECURITY_ALERT_ON_BREACH: TRUE
+
+# --------------------------------------------
+# MODULE SPECIFIC SETTINGS
+# --------------------------------------------
+MODULE_CONNECTION:
+  DEFAULT: INFO
+  DESCRIPTION: Connection management logging level.
+
+MODULE_COMMANDS:
+  DEFAULT: INFO
+  DESCRIPTION: Command execution logging level.
+
+MODULE_TELEMETRY:
+  DEFAULT: INFO
+  DESCRIPTION: Telemetry monitoring logging level.
+
+MODULE_DIAGNOSTICS:
+  DEFAULT: WARNING
+  DESCRIPTION: Diagnostics logging level.
+
+MODULE_ERROR_HANDLING:
+  DEFAULT: ERROR
+  DESCRIPTION: Error recovery logging level.
+
+MODULE_WORKFLOW:
+  DEFAULT: INFO
+  DESCRIPTION: Workflow automation logging level.
+
+# --------------------------------------------
+# ALERT ESCALATION SETTINGS
+# --------------------------------------------
+ALERT_ESCALATION_ENABLED: TRUE
+ALERT_ESCALATION_LEVELS: CRITICAL
+ALERT_ESCALATION_RECIPIENTS: escalation@delphy.com
+
+# --------------------------------------------
+# SYSTEM METADATA
+# --------------------------------------------
+SYSTEM_METADATA:
+  DEPLOYMENT_ENVIRONMENT: "Production"
+  VERSION: "1.0.0"
+  LAST_UPDATE: "2024-12-30"
+  MAINTAINER: "DELPHY Operations Team"
+  SUPPORT_CONTACT: "support@delphy.com"
+
+# --------------------------------------------
+# FINAL VALIDATION SETTINGS
+# --------------------------------------------
+VALIDATION_TELEMETRY: TRUE
+VALIDATION_CONFIGURATION: TRUE
+VALIDATION_TIMEOUT: 30
+VALIDATION_ALERT_ON_FAILURE: TRUE

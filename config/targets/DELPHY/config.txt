@@ -1,0 +1,21 @@
+# config/targets/DELPHY/config.txt
+# DELPHY Target Configuration File
+
+TARGET_NAME: DELPHY
+DESCRIPTION: DELPHY Space System Interface for telemetry, commands, and diagnostics.
+DEFAULT_INTERFACE: TCPIP
+DEFAULT_PORT: 14670
+DEFAULT_IP: 129.162.153.79
+
+# Telemetry Settings
+TELEMETRY_ACK_TIMEOUT: 5
+TELEMETRY_COMPLETE_TIMEOUT: 10
+TELEMETRY_PACKET_SYNC: 0xDEADBEEF
+
+# Command Settings
+COMMAND_RETRY_COUNT: 3
+COMMAND_TIMEOUT: 5
+
+# Logging Settings
+LOG_FILE_PATH: config/tools/delphy_tool/logs/delphy_tool.log
+LOG_LEVEL: INFO

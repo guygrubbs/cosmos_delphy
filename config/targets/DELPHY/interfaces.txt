@@ -1,0 +1,18 @@
+# config/targets/DELPHY/interfaces.txt
+# DELPHY Interface Configuration File
+
+INTERFACE TCPIP
+  NAME: DELPHY_INT
+  TYPE: TCPIP
+  IP_ADDRESS: 129.162.153.79
+  PORT: 14670
+  PROTOCOL: ASCII
+  TIMEOUT: 5
+
+# Fallback Interface
+INTERFACE SERIAL
+  NAME: DELPHY_SERIAL
+  TYPE: SERIAL
+  PORT: COM3
+  BAUDRATE: 9600
+  TIMEOUT: 10

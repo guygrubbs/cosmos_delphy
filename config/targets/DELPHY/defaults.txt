@@ -1,0 +1,16 @@
+# config/targets/DELPHY/defaults.txt
+# DELPHY Default Parameter Configuration File
+
+# Default Parameters for RUN_SCRIPT Command
+RUN_SCRIPT.DEFAULT_SCRIPT_ID: 1
+RUN_SCRIPT.DEFAULT_PARAMETER: 123.45
+
+# Default Parameters for RESET_SYSTEM Command
+RESET_SYSTEM.DEFAULT_MODE: 0
+RESET_SYSTEM.DEFAULT_REASON: Routine Reset
+
+# Default Logging Level
+LOGGING.DEFAULT_LEVEL: 0
+
+# Default Telemetry Settings
+TELEMETRY.DEFAULT_TIMEOUT: 5

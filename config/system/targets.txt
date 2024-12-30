@@ -1,0 +1,214 @@
+# config/system/targets.txt
+# COSMOS Targets Configuration for DELPHY Deployment
+# Defines targets, interfaces, and operational parameters for the system.
+
+# --------------------------------------------
+# GLOBAL SETTINGS
+# --------------------------------------------
+SYSTEM_NAME: DELPHY_SYSTEM
+DESCRIPTION: COSMOS deployment for DELPHY telemetry, commands, and diagnostics.
+
+# --------------------------------------------
+# TARGET DEFINITIONS
+# --------------------------------------------
+TARGET DELPHY
+  DESCRIPTION: Main DELPHY Target for Space System Operations
+  DEFAULT_INTERFACE: TCPIP
+  DEFAULT_IP: 129.162.153.79
+  DEFAULT_PORT: 5025
+  CONNECTION_TIMEOUT: 5
+  RETRY_COUNT: 3
+  COMMAND_TIMEOUT: 10
+  TELEMETRY_TIMEOUT: 5
+  TELEMETRY_ACK_TIMEOUT: 5
+  TELEMETRY_COMPLETE_TIMEOUT: 10
+  TELEMETRY_POLLING_INTERVAL: 60
+  ERROR_RETRY_ATTEMPTS: 3
+  TELEMETRY_SYNC_WORD: 0xDEADBEEF
+  CACHE_SIZE: 1000
+  LOGGING_LEVEL: INFO
+  LOGGING_FILE: config/tools/delphy_tool/logs/delphy_target.log
+  ALERT_LEVELS: ERROR, CRITICAL
+
+# --------------------------------------------
+# INTERFACES
+# --------------------------------------------
+INTERFACE TCPIP
+  NAME: DELPHY_INT
+  TYPE: TCPIP
+  IP_ADDRESS: 129.162.153.79
+  PORT: 5025
+  PROTOCOL: ASCII
+  TIMEOUT: 5
+
+INTERFACE SERIAL
+  NAME: DELPHY_SERIAL
+  TYPE: SERIAL
+  PORT: COM3
+  BAUDRATE: 9600
+  TIMEOUT: 10
+
+# --------------------------------------------
+# MODULE MAPPINGS
+# --------------------------------------------
+MODULE CONNECTION
+  DESCRIPTION: Handles DELPHY connection and disconnection operations.
+  DEFAULT_LOG_LEVEL: INFO
+
+MODULE COMMANDS
+  DESCRIPTION: Executes DELPHY commands and workflows.
+  DEFAULT_LOG_LEVEL: INFO
+
+MODULE TELEMETRY
+  DESCRIPTION: Manages DELPHY telemetry reception and validation.
+  DEFAULT_LOG_LEVEL: INFO
+
+MODULE DIAGNOSTICS
+  DESCRIPTION: Conducts system diagnostics and health monitoring.
+  DEFAULT_LOG_LEVEL: WARNING
+
+MODULE ERROR_HANDLING
+  DESCRIPTION: Handles errors and retries failed operations.
+  DEFAULT_LOG_LEVEL: ERROR
+
+MODULE WORKFLOW
+  DESCRIPTION: Manages DELPHY scripted workflows and automation.
+  DEFAULT_LOG_LEVEL: INFO
+
+# --------------------------------------------
+# ALERT SETTINGS
+# --------------------------------------------
+ALERTS_ENABLED: TRUE
+ALERT_NOTIFICATION_CHANNELS: EMAIL, CONSOLE
+ALERT_EMAIL_RECIPIENTS: ops_team@delphy.com, admin@delphy.com
+ALERT_ESCALATION_RECIPIENTS: escalation@delphy.com
+ALERT_ESCALATION_LEVELS: CRITICAL
+
+# --------------------------------------------
+# TARGET-SPECIFIC TELEMETRY PACKETS
+# --------------------------------------------
+TELEMETRY_PACKET ACK
+  DESCRIPTION: Acknowledgment Telemetry Packet
+  FIELDS:
+    - RESPONSE_CODE UINT8
+    - MESSAGE STRING
+
+TELEMETRY_PACKET COMPLETE
+  DESCRIPTION: Operation Complete Telemetry Packet
+  FIELDS:
+    - STATUS_CODE UINT8
+    - MESSAGE STRING
+
+TELEMETRY_PACKET METADATA
+  DESCRIPTION: System Metadata Telemetry Packet
+  FIELDS:
+    - SYSTEM_STATE STRING
+    - ERROR_COUNT UINT8
+
+# --------------------------------------------
+# COMMAND DEFINITIONS
+# --------------------------------------------
+COMMAND RUN_SCRIPT
+  DESCRIPTION: Runs a specific DELPHY script with parameters.
+  PARAMETERS:
+    - SCRIPT_ID UINT8
+    - PARAMETER FLOAT
+  TIMEOUT: 10
+  RETRY_ATTEMPTS: 2
+
+COMMAND RESET_SYSTEM
+  DESCRIPTION: Resets the DELPHY system.
+  PARAMETERS:
+    - MODE UINT8
+    - REASON STRING
+  TIMEOUT: 15
+
+COMMAND SEND_MESSAGE
+  DESCRIPTION: Sends a log message to DELPHY.
+  PARAMETERS:
+    - LOG_LEVEL UINT8
+    - MESSAGE STRING
+  TIMEOUT: 5
+
+# --------------------------------------------
+# ERROR HANDLING SETTINGS
+# --------------------------------------------
+ERROR_HANDLING:
+  RETRY_COUNT: 3
+  RETRY_DELAY: 2
+  ALERT_ON_FAILURE: TRUE
+  ALERT_LEVELS: ERROR, CRITICAL
+
+# --------------------------------------------
+# CACHE SETTINGS
+# --------------------------------------------
+CACHE_ENABLED: TRUE
+CACHE_MAX_SIZE: 5000
+CACHE_EVICTION_POLICY: LRU
+CACHE_FILE: config/tools/delphy_tool/cache/telemetry_cache.dat
+CACHE_PERSISTENCE_ENABLED: TRUE
+
+# --------------------------------------------
+# MONITORING RULES
+# --------------------------------------------
+MONITOR ACK
+  CONDITION: RESPONSE_CODE == 0
+  ACTION: LOG "ACK telemetry received successfully."
+
+MONITOR COMPLETE
+  CONDITION: STATUS_CODE == 0
+  ACTION: LOG "Operation completed successfully."
+
+MONITOR METADATA
+  CONDITION: SYSTEM_STATE == "NOMINAL"
+  ACTION: LOG "System state nominal."
+  ACTION: ALERT "System anomaly detected!" IF SYSTEM_STATE != "NOMINAL"
+
+MONITOR ERROR_COUNT
+  CONDITION: ERROR_COUNT > 5
+  ACTION: ALERT "High error count detected!"
+  ACTION: RESET_SYSTEM MODE:0 REASON:"High Error Count Detected"
+
+# --------------------------------------------
+# DIAGNOSTICS SETTINGS
+# --------------------------------------------
+DIAGNOSTICS_ENABLED: TRUE
+DIAGNOSTICS_INTERVAL: DAILY
+DIAGNOSTICS_ALERT_ON_FAILURE: TRUE
+DIAGNOSTICS_EMAIL_RECIPIENTS: diagnostics@delphy.com, support@delphy.com
+
+# --------------------------------------------
+# WORKFLOW SETTINGS
+# --------------------------------------------
+WORKFLOW_AUTOMATION: TRUE
+WORKFLOW_RETRY_ATTEMPTS: 2
+WORKFLOW_TIMEOUT: 60
+WORKFLOW_DIAGNOSTICS_ENABLED: TRUE
+WORKFLOW_TELEMETRY_VALIDATION: TRUE
+
+# --------------------------------------------
+# SYSTEM RESET SETTINGS
+# --------------------------------------------
+RESET_DEFAULT_MODE: 0
+RESET_DEFAULT_REASON: "Scheduled Maintenance"
+RESET_TIMEOUT: 15
+RESET_POST_VALIDATION: TRUE
+
+# --------------------------------------------
+# MAINTENANCE SETTINGS
+# --------------------------------------------
+MAINTENANCE_SCHEDULED_RESET: TRUE
+MAINTENANCE_RESET_INTERVAL: WEEKLY
+MAINTENANCE_LOG_CLEANUP_INTERVAL: WEEKLY
+MAINTENANCE_DIAGNOSTICS_INTERVAL: DAILY
+MAINTENANCE_MAX_LOG_AGE: 30
+
+# --------------------------------------------
+# TARGET METADATA
+# --------------------------------------------
+TARGET_METADATA:
+  ENVIRONMENT: "Production"
+  VERSION: "1.0.0"
+  LAST_UPDATE: "2024-12-30"
+  MAINTAINER: "DELPHY Operations Team"
+  SUPPORT_CONTACT: "support@delphy.com"

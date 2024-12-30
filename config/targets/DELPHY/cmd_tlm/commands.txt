@@ -1,0 +1,80 @@
+# commands.txt
+# Command definitions for DELPHY Interface (COSMOS v4)
+# Based on PCS Network Specification
+
+# --------------------------------------------
+# RUN_SCRIPT Command
+# High-level command to execute a script with parameters.
+# --------------------------------------------
+COMMAND DELPHY RUN_SCRIPT
+  UINT32 BE SCRIPT_ID "Identifier for the script to be executed"
+  FLOAT BE PARAMETER "Parameter value for the script command"
+
+# --------------------------------------------
+# CONTROL Command
+# Request external control of the DELPHY system.
+# --------------------------------------------
+COMMAND DELPHY CONTROL
+  STRING BE CONTROL_MESSAGE 64 "Message describing control purpose"
+
+# --------------------------------------------
+# DISCONNECT Command
+# Notify DELPHY system about expected disconnection.
+# --------------------------------------------
+COMMAND DELPHY DISCONNECT
+  UINT32 BE REASON_CODE "Reason code for disconnect"
+  STRING BE MESSAGE 64 "Optional human-readable disconnect message"
+
+# --------------------------------------------
+# SEND_MESSAGE Command
+# Send a general string message to the DELPHY system.
+# --------------------------------------------
+COMMAND DELPHY SEND_MESSAGE
+  UINT32 BE LOG_LEVEL "Log level: 0=Output, 1=Warning, 2=Error, 3=Debug, 4=Journal"
+  STRING BE MESSAGE 128 "Message content"
+
+# --------------------------------------------
+# REQUEST_IDENTITY Command
+# Identify this COSMOS client to the DELPHY system.
+# --------------------------------------------
+COMMAND DELPHY REQUEST_IDENTITY
+  UINT32 BE MACHINE_ID "Identifier for the connecting machine/software"
+
+# --------------------------------------------
+# RUN_CUSTOM_SCRIPT Command
+# Execute a custom script by name.
+# --------------------------------------------
+COMMAND DELPHY RUN_CUSTOM_SCRIPT
+  STRING BE SCRIPT_NAME 64 "Name of the script to execute"
+  UINT32 BE TIMEOUT "Timeout for script execution (in seconds)"
+
+# --------------------------------------------
+# SET_PROPERTY Command
+# Set a hardware property value.
+# --------------------------------------------
+COMMAND DELPHY SET_PROPERTY
+  UINT32 BE PROPERTY_ID "Unique identifier for the property"
+  FLOAT BE PROPERTY_VALUE "Value to set for the property"
+
+# --------------------------------------------
+# GET_PROPERTY Command
+# Request the value of a specific hardware property.
+# --------------------------------------------
+COMMAND DELPHY GET_PROPERTY
+  UINT32 BE PROPERTY_ID "Unique identifier for the property"
+
+# --------------------------------------------
+# CAPTURE_DATA Command
+# Initiate data capture from DELPHY hardware.
+# --------------------------------------------
+COMMAND DELPHY CAPTURE_DATA
+  STRING BE CAPTURE_TYPE 64 "Type of data to capture"
+  UINT32 BE CAPTURE_ID "Identifier for the capture process"
+
+# --------------------------------------------
+# RESET_SYSTEM Command
+# Perform a system reset on DELPHY.
+# --------------------------------------------
+COMMAND DELPHY RESET_SYSTEM
+  UINT32 BE RESET_MODE "Mode of reset: 0=Soft Reset, 1=Hard Reset"
+  STRING BE RESET_REASON 64 "Reason for the reset"

@@ -1,0 +1,111 @@
+# telemetry.txt
+# Telemetry definitions for DELPHY Interface (COSMOS v4)
+# Based on PCS Network Specification
+
+# --------------------------------------------
+# ACK Telemetry Packet
+# Acknowledgment response to command or script execution.
+# --------------------------------------------
+TELEMETRY DELPHY ACK
+  UINT32 BE PACKET_ID "Unique Packet Identifier"
+  UINT32 BE STATUS_CODE "Response code: 0=Success, Non-zero=Error"
+  STRING BE MESSAGE 64 "Acknowledgment message (human-readable)"
+
+# --------------------------------------------
+# COMPLETE Telemetry Packet
+# Indicates the completion status of a script execution.
+# --------------------------------------------
+TELEMETRY DELPHY COMPLETE
+  UINT32 BE PACKET_ID "Unique Packet Identifier"
+  UINT32 BE STATUS_CODE "Status code: 0=Success, 1=Aborted, 2=Exception"
+  STRING BE MESSAGE 64 "Completion message (e.g., Success or Error description)"
+
+# --------------------------------------------
+# MESSAGE Telemetry Packet
+# General string messages from the DELPHY system.
+# --------------------------------------------
+TELEMETRY DELPHY MESSAGE
+  UINT32 BE LOG_LEVEL "Log level: 0=Output, 1=Warning, 2=Error, 3=Debug, 4=Journal"
+  STRING BE MESSAGE 128 "Log message"
+
+# --------------------------------------------
+# CONTROL Telemetry Packet
+# Feedback on control request execution.
+# --------------------------------------------
+TELEMETRY DELPHY CONTROL
+  UINT32 BE PACKET_ID "Unique Packet Identifier"
+  UINT32 BE STATUS_CODE "Control result code: 0=Success, Non-zero=Failure"
+  STRING BE MESSAGE 64 "Control response message"
+
+# --------------------------------------------
+# CONFIGURATION Telemetry Packet
+# Provides configuration data as raw XML.
+# --------------------------------------------
+TELEMETRY DELPHY CONFIGURATION
+  UINT32 BE PACKET_ID "Unique Packet Identifier"
+  BINARY BE CONFIGURATION_DATA 1024 "Raw XML configuration data"
+
+# --------------------------------------------
+# MONITOR Telemetry Packet
+# Periodic updates of monitored hardware values.
+# --------------------------------------------
+TELEMETRY DELPHY MONITOR
+  UINT32 BE MODE "Hardware mode: 0=Safe, 1=Simulation, 2=Operational"
+  UINT32 BE PROPERTY_ID "Property identifier"
+  FLOAT64 BE PROPERTY_VALUE "Current property value"
+
+# --------------------------------------------
+# METADATA Telemetry Packet
+# Provides metadata about hardware properties.
+# --------------------------------------------
+TELEMETRY DELPHY METADATA
+  UINT32 BE PROPERTY_ID "Unique Property Identifier"
+  STRING BE PROPERTY_NAME 64 "Name of the property"
+  FLOAT64 BE PROPERTY_MIN "Minimum valid value"
+  FLOAT64 BE PROPERTY_MAX "Maximum valid value"
+  FLOAT64 BE PROPERTY_WARNING_LOW "Warning lower bound"
+  FLOAT64 BE PROPERTY_WARNING_HIGH "Warning upper bound"
+  FLOAT64 BE PROPERTY_SAFE_VALUE "Value for safe mode"
+
+# --------------------------------------------
+# EVENT Telemetry Packet
+# Notification of hardware events.
+# --------------------------------------------
+TELEMETRY DELPHY EVENT
+  UINT32 BE INTERRUPT "Interrupt flag: 0=Non-Interrupting, 1=Interrupting"
+  STRING BE EVENT_NAME 64 "Name of the event"
+
+# --------------------------------------------
+# CAPTURE Telemetry Packet
+# Data capture from DELPHY hardware.
+# --------------------------------------------
+TELEMETRY DELPHY CAPTURE
+  UINT32 BE PROPERTY_ID "Identifier for the captured data"
+  STRING BE CAPTURE_TYPE 64 "Type of captured data"
+  BINARY BE CAPTURE_DATA 2048 "Captured raw data"
+
+# --------------------------------------------
+# IDENTITY Telemetry Packet
+# Confirms system identity after connection.
+# --------------------------------------------
+TELEMETRY DELPHY IDENTITY
+  UINT32 BE MACHINE_ID "Identifier of the connecting machine"
+  STRING BE MACHINE_NAME 64 "Name of the connecting machine"
+  STRING BE SOFTWARE_VERSION 32 "Version of the connecting software"
+
+# --------------------------------------------
+# RESET Telemetry Packet
+# System reset feedback.
+# --------------------------------------------
+TELEMETRY DELPHY RESET
+  UINT32 BE RESET_MODE "Reset mode: 0=Soft Reset, 1=Hard Reset"
+  STRING BE RESET_REASON 64 "Reason for the reset"
+  UINT32 BE STATUS_CODE "Status code for reset: 0=Success, Non-zero=Failure"
+
+# --------------------------------------------
+# DISCONNECT Telemetry Packet
+# Confirmation of expected disconnect.
+# --------------------------------------------
+TELEMETRY DELPHY DISCONNECT
+  UINT32 BE REASON_CODE "Reason code for disconnect"
+  STRING BE MESSAGE 64 "Disconnect message"

@@ -1,0 +1,121 @@
+{
+    "connection": {
+      "default_interface": "TCPIP",
+      "default_ip": "129.162.153.79",
+      "default_port": 14670,
+      "retry_count": 3,
+      "connection_timeout": 5,
+      "heartbeat_interval": 60
+    },
+    "commands": {
+      "run_script": {
+        "default_script_id": 1,
+        "default_parameter": 123.45,
+        "timeout": 10,
+        "retry_attempts": 2
+      },
+      "reset_system": {
+        "default_mode": 0,
+        "default_reason": "Scheduled Maintenance Reset",
+        "timeout": 15
+      },
+      "send_message": {
+        "default_log_level": 0,
+        "default_message": "Default message from DELPHY tool",
+        "timeout": 5
+      }
+    },
+    "telemetry": {
+      "default_timeout": 5,
+      "ack_timeout": 5,
+      "complete_timeout": 10,
+      "packet_sync_word": "0xDEADBEEF",
+      "retry_attempts": 2,
+      "default_polling_interval": 60,
+      "telemetry_cache_size": 1000
+    },
+    "error_handling": {
+      "max_retry_attempts": 3,
+      "retry_delay": 2,
+      "alert_on_error": true,
+      "alert_levels": ["ERROR", "CRITICAL"]
+    },
+    "logging": {
+      "default_level": "INFO",
+      "log_file_path": "config/tools/delphy_tool/logs/delphy_tool.log",
+      "log_file_rotation": "daily",
+      "max_log_file_size": "10MB",
+      "max_backup_files": 5,
+      "console_logging": true,
+      "file_logging": true,
+      "format": "[%LEVEL%] %TIMESTAMP% - %MODULE% - %MESSAGE%",
+      "timestamp_format": "%Y-%m-%d %H:%M:%S"
+    },
+    "workflows": {
+      "default_script_id": 1,
+      "default_parameter": 456.78,
+      "timeout": 60,
+      "retry_attempts": 1,
+      "diagnostics_enabled": true,
+      "telemetry_validation": true,
+      "error_handling_enabled": true
+    },
+    "diagnostics": {
+      "enabled": true,
+      "default_check_interval": 30,
+      "retry_attempts": 2,
+      "alert_on_failure": true,
+      "alert_recipients": ["diagnostics@delphy.com", "support@delphy.com"]
+    },
+    "system_reset": {
+      "default_mode": 0,
+      "default_reason": "End of Workflow Reset",
+      "timeout": 15,
+      "retry_attempts": 2,
+      "post_reset_validation": true
+    },
+    "monitoring": {
+      "default_interval": 60,
+      "telemetry_monitoring": true,
+      "error_threshold": 5,
+      "alert_on_exceed": true,
+      "notification_channels": ["email", "console"],
+      "email_recipients": ["ops_team@delphy.com", "admin@delphy.com"]
+    },
+    "alerts": {
+      "enabled": true,
+      "notification_channels": ["email", "console"],
+      "levels": ["ERROR", "CRITICAL"],
+      "escalation_recipients": ["escalation@delphy.com"],
+      "default_subject": "DELPHY Tool Alert",
+      "email_template": "config/tools/delphy_tool/templates/alert_email_template.txt"
+    },
+    "cache": {
+      "enabled": true,
+      "max_size": 5000,
+      "eviction_policy": "LRU",
+      "cache_persistence": true,
+      "cache_file": "config/tools/delphy_tool/cache/telemetry_cache.dat"
+    },
+    "session": {
+      "session_timeout": 1800,
+      "idle_disconnect": true,
+      "auto_reconnect": true
+    },
+    "validation": {
+      "telemetry_check": true,
+      "configuration_check": true,
+      "retry_attempts": 2,
+      "timeout": 30,
+      "alert_on_failure": true
+    },
+    "maintenance": {
+      "scheduled_reset": true,
+      "reset_interval": "weekly",
+      "reset_reason": "Scheduled Maintenance",
+      "diagnostics_interval": "daily",
+      "log_cleanup_interval": "weekly",
+      "max_log_age": 30
+    }
+  }
+  
