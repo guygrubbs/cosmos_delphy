@@ -103,7 +103,7 @@ end
 if __FILE__ == $PROGRAM_NAME
   begin
     # Simulating Errors
-    raise DelphyConnectionError, 'Unable to connect to 129.162.153.79:5000'
+    raise DelphyConnectionError, 'Unable to connect to 129.162.153.79:14670'
   rescue DelphyError => e
     DelphyErrorHandler.handle_error(e)
   end

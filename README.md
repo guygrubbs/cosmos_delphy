@@ -41,7 +41,7 @@ Ensure the following prerequisites are met before proceeding:
 - **COSMOS Version:** 4.0 or higher  
 - **Ruby Version:** 3.1.2  
 - **Bundler:** 2.4 or higher  
-- **Network Access:** Access to DELPHY's IP and Port (`129.162.153.79:5025`)  
+- **Network Access:** Access to DELPHY's IP and Port (`129.162.153.79:14670`)  
 - **Access Permissions:** Ensure sufficient privileges for deployment and tool execution  
 
 ---
@@ -79,7 +79,7 @@ Create a `.env` file in the root directory to manage environment variables:
 ```plaintext
 DELPHY_INTERFACE=TCPIP
 DELPHY_IP=129.162.153.79
-DELPHY_PORT=5025
+DELPHY_PORT=14670
 ```
 
 ### **4.5 Verify Installation**
