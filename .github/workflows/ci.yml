@@ -1,7 +1,7 @@
 # .github/workflows/ci.yml
-# DELPHY CI/CD Pipeline with Docker Build and Deployment on GitHub Actions
+# Modern CI/CD Pipeline for COSMOS with Testing and Deployment Stages
 
-name: DELPHY CI/CD Pipeline
+name: COSMOS CI/CD Pipeline
 
 on:
   push:
@@ -26,7 +26,7 @@ jobs:
       - name: Build Docker Image
         run: |
           docker build -t ghcr.io/guygrubbs/cosmos_delphy:latest .
-      
+
       - name: Push Docker Image to GHCR
         run: |
           docker push ghcr.io/guygrubbs/cosmos_delphy:latest
@@ -44,17 +44,17 @@ jobs:
       image: ghcr.io/guygrubbs/cosmos_delphy:latest
 
     steps:
-      - name: Install Dependencies
-        run: |
-          bundle _1.17.3_ install
-
       - name: Validate Environment
         run: |
           ruby -v
           bundler -v
-          qmake --version
-          cmake --version
           rspec --version
+          cmake --version
+          qmake --version
+
+      - name: Install Ruby Dependencies
+        run: |
+          bundle _1.17.3_ install --jobs=4 --retry=3
 
   lint:
     name: Code Linting
@@ -65,8 +65,7 @@ jobs:
 
     steps:
       - name: Run RuboCop
-        run: |
-          bundle exec rubocop
+        run: bundle exec rubocop
 
   unit_tests:
     name: Unit Tests
@@ -77,8 +76,7 @@ jobs:
 
     steps:
       - name: Run Unit Tests
-        run: |
-          bundle exec rspec tests/targets/DELPHY --format documentation
+        run: bundle exec rspec tests/targets/DELPHY --format documentation
 
   integration_tests:
     name: Integration Tests
@@ -89,8 +87,7 @@ jobs:
 
     steps:
       - name: Run Integration Tests
-        run: |
-          bundle exec rspec tests/targets/DELPHY/integration_test.rb --format documentation
+        run: bundle exec rspec tests/targets/DELPHY/integration_test.rb --format documentation
 
   deployment:
     name: Deployment
@@ -107,8 +104,7 @@ jobs:
           ./deploy.sh
 
       - name: Validate Deployment Logs
-        run: |
-          tail -n 50 /opt/cosmos_delphy/config/targets/DELPHY/tools/logs/*.log
+        run: tail -n 50 /app/config/targets/DELPHY/tools/logs/*.log
 
   finalize:
     name: Finalization
@@ -117,5 +113,4 @@ jobs:
 
     steps:
       - name: Deployment Success
-        run: |
-          echo "✅ Deployment Successful!"
+        run: echo "✅ Deployment Successful!"

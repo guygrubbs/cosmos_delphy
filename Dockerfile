@@ -1,11 +1,13 @@
-# Dockerfile for COSMOS CI Environment with Qt5 and RSpec
+# Dockerfile for COSMOS CI/CD Environment with Modern Dependencies
 
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 
 # Set Environment Variables
 ENV DEBIAN_FRONTEND=noninteractive
+ENV RUBY_VERSION=2.7.8
+ENV BUNDLER_VERSION=1.17.3
 
-# Install dependencies
+# Install System Dependencies
 RUN apt-get update && apt-get install -y \
     build-essential \
     cmake \
@@ -13,6 +15,7 @@ RUN apt-get update && apt-get install -y \
     qt5-default \
     libqt5widgets5 \
     ruby-full \
+    ruby-dev \
     bundler \
     git \
     curl \
@@ -24,31 +27,28 @@ RUN apt-get update && apt-get install -y \
     libxrender-dev \
     libxcb1-dev \
     libxcb-glx0-dev \
+    rspec \
     && apt-get clean
 
-# Install specific Ruby version (2.7.8)
-RUN apt-get update && \
-    apt-get install -y software-properties-common && \
-    add-apt-repository ppa:brightbox/ruby-ng && \
-    apt-get update && \
-    apt-get install -y ruby2.7 ruby2.7-dev && \
-    gem install bundler -v 1.17.3 && \
-    gem install rspec
+# Install Specific Ruby Version and Bundler
+RUN gem install bundler -v $BUNDLER_VERSION
+RUN gem install rspec
 
-# Set Ruby 2.7.8 as default
+# Set Ruby Alternatives to Ensure Compatibility
 RUN update-alternatives --install /usr/bin/ruby ruby /usr/bin/ruby2.7 1
-RUN ruby -v
+RUN ruby -v && bundler -v && rspec --version
 
-# Set working directory
+# Set Working Directory
 WORKDIR /app
 
-# Copy project files
+# Copy Project Files
 COPY . /app
 
-# Install Ruby dependencies with Bundler
-RUN bundle _1.17.3_ install --jobs=4 --retry=3
+# Install Ruby Dependencies
+RUN bundle _${BUNDLER_VERSION}_ install --jobs=4 --retry=3
 
-# Validate installation
+# Validate Installation
 RUN ruby -v && bundler -v && cmake --version && qmake --version && rspec --version
 
+# Define Default Command
 CMD ["/bin/bash"]
