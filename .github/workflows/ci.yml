@@ -1,4 +1,6 @@
 # .github/workflows/ci.yml
+# DELPHY CI/CD Pipeline Configuration
+
 name: DELPHY CI/CD Pipeline
 
 on:
@@ -18,21 +20,35 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
+      - name: Install Required Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libqt4-dev cmake build-essential pkg-config
+
       - name: Install Ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: '2.7'
           bundler-cache: true
 
-      - name: Install Dependencies
+      - name: Install Bundler
         run: |
           gem install bundler -v 1.17.3
+
+      - name: Clean Build Environment
+        run: |
+          sudo rm -rf vendor/bundle/ruby/2.7.0/gems/qtbindings-4.8.6.5/ext/build
+
+      - name: Install Dependencies
+        run: |
           bundle _1.17.3_ install
 
-      - name: Validate Dependencies
+      - name: Validate Environment
         run: |
           ruby -v
           bundler -v
+          qmake --version
+          cmake --version
 
   lint:
     name: Code Linting
@@ -40,6 +56,9 @@ jobs:
     needs: setup
 
     steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
       - name: Run RuboCop
         run: |
           bundle exec rubocop
@@ -50,6 +69,9 @@ jobs:
     needs: setup
 
     steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
       - name: Run Unit Tests
         run: |
           bundle exec rspec tests/targets/DELPHY --format documentation
@@ -60,6 +82,9 @@ jobs:
     needs: setup
 
     steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
       - name: Run Integration Tests
         run: |
           bundle exec rspec tests/targets/DELPHY/integration_test.rb --format documentation
@@ -71,10 +96,24 @@ jobs:
     if: github.ref == 'refs/heads/main'
 
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v3
+      - name: Checkout Repository
+        uses: actions/checkout@v3
 
-    - name: Run Deployment Script
-      run: |
-        chmod +x deploy.sh
-        sudo ./deploy.sh
+      - name: Run Deployment Script
+        run: |
+          chmod +x deploy.sh
+          sudo ./deploy.sh
+
+      - name: Validate Deployment Logs
+        run: |
+          tail -n 50 /opt/cosmos_delphy/config/targets/DELPHY/tools/logs/*.log
+
+  finalize:
+    name: Finalization
+    runs-on: ubuntu-latest
+    needs: deployment
+
+    steps:
+      - name: Deployment Success
+        run: |
+          echo "✅ Deployment Successful!"
