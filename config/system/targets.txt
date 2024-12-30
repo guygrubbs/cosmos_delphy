@@ -1,21 +1,21 @@
 # config/system/targets.txt
 # COSMOS Targets Configuration for DELPHY Deployment
-# Defines targets, interfaces, and operational parameters for the system.
+# Defines targets, interfaces, telemetry settings, and commands for DELPHY.
 
 # --------------------------------------------
-# GLOBAL SETTINGS
+# GLOBAL TARGET SETTINGS
 # --------------------------------------------
 SYSTEM_NAME: DELPHY_SYSTEM
-DESCRIPTION: COSMOS deployment for DELPHY telemetry, commands, and diagnostics.
+DESCRIPTION: COSMOS deployment for DELPHY Space System Operations.
 
 # --------------------------------------------
 # TARGET DEFINITIONS
 # --------------------------------------------
 TARGET DELPHY
-  DESCRIPTION: Main DELPHY Target for Space System Operations
+  DESCRIPTION: DELPHY Space System Target for Command and Telemetry Operations
   DEFAULT_INTERFACE: TCPIP
   DEFAULT_IP: 129.162.153.79
-  DEFAULT_PORT: 5025
+  DEFAULT_PORT: 14670
   CONNECTION_TIMEOUT: 5
   RETRY_COUNT: 3
   COMMAND_TIMEOUT: 10
@@ -23,15 +23,14 @@ TARGET DELPHY
   TELEMETRY_ACK_TIMEOUT: 5
   TELEMETRY_COMPLETE_TIMEOUT: 10
   TELEMETRY_POLLING_INTERVAL: 60
-  ERROR_RETRY_ATTEMPTS: 3
-  TELEMETRY_SYNC_WORD: 0xDEADBEEF
+  TELEMETRY_PACKET_SYNC: 0xDEADBEEF
   CACHE_SIZE: 1000
   LOGGING_LEVEL: INFO
   LOGGING_FILE: config/tools/delphy_tool/logs/delphy_target.log
   ALERT_LEVELS: ERROR, CRITICAL
 
 # --------------------------------------------
-# INTERFACES
+# INTERFACE DEFINITIONS
 # --------------------------------------------
 INTERFACE TCPIP
   NAME: DELPHY_INT
@@ -49,43 +48,7 @@ INTERFACE SERIAL
   TIMEOUT: 10
 
 # --------------------------------------------
-# MODULE MAPPINGS
-# --------------------------------------------
-MODULE CONNECTION
-  DESCRIPTION: Handles DELPHY connection and disconnection operations.
-  DEFAULT_LOG_LEVEL: INFO
-
-MODULE COMMANDS
-  DESCRIPTION: Executes DELPHY commands and workflows.
-  DEFAULT_LOG_LEVEL: INFO
-
-MODULE TELEMETRY
-  DESCRIPTION: Manages DELPHY telemetry reception and validation.
-  DEFAULT_LOG_LEVEL: INFO
-
-MODULE DIAGNOSTICS
-  DESCRIPTION: Conducts system diagnostics and health monitoring.
-  DEFAULT_LOG_LEVEL: WARNING
-
-MODULE ERROR_HANDLING
-  DESCRIPTION: Handles errors and retries failed operations.
-  DEFAULT_LOG_LEVEL: ERROR
-
-MODULE WORKFLOW
-  DESCRIPTION: Manages DELPHY scripted workflows and automation.
-  DEFAULT_LOG_LEVEL: INFO
-
-# --------------------------------------------
-# ALERT SETTINGS
-# --------------------------------------------
-ALERTS_ENABLED: TRUE
-ALERT_NOTIFICATION_CHANNELS: EMAIL, CONSOLE
-ALERT_EMAIL_RECIPIENTS: kolton.dieckow@swri.org, admin@delphy.com
-ALERT_ESCALATION_RECIPIENTS: escalation@delphy.com
-ALERT_ESCALATION_LEVELS: CRITICAL
-
-# --------------------------------------------
-# TARGET-SPECIFIC TELEMETRY PACKETS
+# TELEMETRY PACKETS
 # --------------------------------------------
 TELEMETRY_PACKET ACK
   DESCRIPTION: Acknowledgment Telemetry Packet
@@ -109,7 +72,7 @@ TELEMETRY_PACKET METADATA
 # COMMAND DEFINITIONS
 # --------------------------------------------
 COMMAND RUN_SCRIPT
-  DESCRIPTION: Runs a specific DELPHY script with parameters.
+  DESCRIPTION: Execute a predefined DELPHY script with parameters.
   PARAMETERS:
     - SCRIPT_ID UINT8
     - PARAMETER FLOAT
@@ -117,18 +80,29 @@ COMMAND RUN_SCRIPT
   RETRY_ATTEMPTS: 2
 
 COMMAND RESET_SYSTEM
-  DESCRIPTION: Resets the DELPHY system.
+  DESCRIPTION: Reset the DELPHY system with a specific mode and reason.
   PARAMETERS:
     - MODE UINT8
     - REASON STRING
   TIMEOUT: 15
 
 COMMAND SEND_MESSAGE
-  DESCRIPTION: Sends a log message to DELPHY.
+  DESCRIPTION: Send a log message to the DELPHY system.
   PARAMETERS:
     - LOG_LEVEL UINT8
     - MESSAGE STRING
   TIMEOUT: 5
+
+COMMAND PERFORM_DIAGNOSTICS
+  DESCRIPTION: Run system diagnostics and health checks.
+  PARAMETERS: NONE
+  TIMEOUT: 15
+
+COMMAND MONITOR_TELEMETRY
+  DESCRIPTION: Monitor and validate telemetry packets.
+  PARAMETERS:
+    - TYPE STRING
+  TIMEOUT: 10
 
 # --------------------------------------------
 # ERROR HANDLING SETTINGS
@@ -140,17 +114,15 @@ ERROR_HANDLING:
   ALERT_LEVELS: ERROR, CRITICAL
 
 # --------------------------------------------
-# CACHE SETTINGS
+# MONITORING SETTINGS
 # --------------------------------------------
-CACHE_ENABLED: TRUE
-CACHE_MAX_SIZE: 5000
-CACHE_EVICTION_POLICY: LRU
-CACHE_FILE: config/tools/delphy_tool/cache/telemetry_cache.dat
-CACHE_PERSISTENCE_ENABLED: TRUE
+MONITORING_ENABLED: TRUE
+MONITORING_INTERVAL: 60
+MONITORING_ERROR_THRESHOLD: 5
+MONITORING_ALERT_ON_EXCEED: TRUE
+MONITORING_NOTIFICATION_CHANNELS: EMAIL, CONSOLE
 
-# --------------------------------------------
-# MONITORING RULES
-# --------------------------------------------
+# Monitoring Rules
 MONITOR ACK
   CONDITION: RESPONSE_CODE == 0
   ACTION: LOG "ACK telemetry received successfully."
@@ -161,7 +133,7 @@ MONITOR COMPLETE
 
 MONITOR METADATA
   CONDITION: SYSTEM_STATE == "NOMINAL"
-  ACTION: LOG "System state nominal."
+  ACTION: LOG "System state is nominal."
   ACTION: ALERT "System anomaly detected!" IF SYSTEM_STATE != "NOMINAL"
 
 MONITOR ERROR_COUNT
@@ -170,45 +142,49 @@ MONITOR ERROR_COUNT
   ACTION: RESET_SYSTEM MODE:0 REASON:"High Error Count Detected"
 
 # --------------------------------------------
+# CACHE SETTINGS
+# --------------------------------------------
+CACHE_ENABLED: TRUE
+CACHE_MAX_SIZE: 5000
+CACHE_EVICTION_POLICY: LRU
+CACHE_FILE: config/tools/delphy_tool/cache/telemetry_cache.dat
+CACHE_PERSISTENCE_ENABLED: TRUE
+
+# --------------------------------------------
+# ALERT SETTINGS
+# --------------------------------------------
+ALERTS_ENABLED: TRUE
+ALERT_LEVELS: ERROR, CRITICAL
+ALERT_NOTIFICATION_CHANNELS: EMAIL, CONSOLE
+ALERT_EMAIL_RECIPIENTS: kolton.dieckow@swri.org, guygrubbs@gmail.com
+ALERT_ESCALATION_RECIPIENTS: kolton.dieckow@swri.org, guygrubbs@gmail.com
+ALERT_EMAIL_SUBJECT: "DELPHY Target Alert"
+ALERT_EMAIL_TEMPLATE: config/tools/delphy_tool/templates/alert_email_template.txt
+
+# --------------------------------------------
+# SECURITY SETTINGS
+# --------------------------------------------
+SECURITY_ENABLE_AUTHENTICATION: TRUE
+SECURITY_ENABLE_ENCRYPTION: TRUE
+SECURITY_ALLOWED_IPS: 129.162.153.0/24
+SECURITY_LOG_INVALID_ACCESS: TRUE
+SECURITY_ALERT_ON_BREACH: TRUE
+
+# --------------------------------------------
 # DIAGNOSTICS SETTINGS
 # --------------------------------------------
 DIAGNOSTICS_ENABLED: TRUE
 DIAGNOSTICS_INTERVAL: DAILY
+DIAGNOSTICS_RETRY_ATTEMPTS: 2
 DIAGNOSTICS_ALERT_ON_FAILURE: TRUE
-DIAGNOSTICS_EMAIL_RECIPIENTS: diagnostics@delphy.com, support@delphy.com
+DIAGNOSTICS_EMAIL_RECIPIENTS: kolton.dieckow@swri.org, guygrubbs@gmail.com
 
 # --------------------------------------------
-# WORKFLOW SETTINGS
+# SYSTEM METADATA
 # --------------------------------------------
-WORKFLOW_AUTOMATION: TRUE
-WORKFLOW_RETRY_ATTEMPTS: 2
-WORKFLOW_TIMEOUT: 60
-WORKFLOW_DIAGNOSTICS_ENABLED: TRUE
-WORKFLOW_TELEMETRY_VALIDATION: TRUE
-
-# --------------------------------------------
-# SYSTEM RESET SETTINGS
-# --------------------------------------------
-RESET_DEFAULT_MODE: 0
-RESET_DEFAULT_REASON: "Scheduled Maintenance"
-RESET_TIMEOUT: 15
-RESET_POST_VALIDATION: TRUE
-
-# --------------------------------------------
-# MAINTENANCE SETTINGS
-# --------------------------------------------
-MAINTENANCE_SCHEDULED_RESET: TRUE
-MAINTENANCE_RESET_INTERVAL: WEEKLY
-MAINTENANCE_LOG_CLEANUP_INTERVAL: WEEKLY
-MAINTENANCE_DIAGNOSTICS_INTERVAL: DAILY
-MAINTENANCE_MAX_LOG_AGE: 30
-
-# --------------------------------------------
-# TARGET METADATA
-# --------------------------------------------
-TARGET_METADATA:
-  ENVIRONMENT: "Production"
+SYSTEM_METADATA:
+  DEPLOYMENT_ENVIRONMENT: "Production"
   VERSION: "1.0.0"
   LAST_UPDATE: "2024-12-30"
-  Maintainer:** DELPHY Operations Team (Guy Grubbs & Kolton Dieckow)
+  MAINTAINER: "DELPHY Operations Team"
   SUPPORT_CONTACT: "kolton.dieckow@swri.org"

@@ -76,4 +76,4 @@ alerts:
   notification_channel: email
   email_recipients:
     - kolton.dieckow@swri.org
-    - admin@delphy.com
+    - kolton.dieckow@swri.org

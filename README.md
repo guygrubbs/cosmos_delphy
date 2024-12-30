@@ -215,7 +215,7 @@ ruby config/procedures/delphy_validation_procedure.rb
 ## **10. Support**
 
 - **Operations Team:** [kolton.dieckow@swri.org](mailto:kolton.dieckow@swri.org)  
-- **Support Team:** [support@delphy.com](mailto:support@delphy.com)  
+- **Support Team:** [guygrubbs@gmail.com](mailto:guygrubbs@gmail.com)  
 
 ---
 

@@ -342,7 +342,7 @@ WORKFLOW_COMPLETE
 ## **11. Support**
 
 For assistance, please contact:  
-**Support Team:** [support@delphy.com](mailto:support@delphy.com)  
+**Support Team:** [guygrubbs@gmail.com](mailto:guygrubbs@gmail.com)  
 **Operations Team:** [kolton.dieckow@swri.org](mailto:kolton.dieckow@swri.org)  
 
 ---

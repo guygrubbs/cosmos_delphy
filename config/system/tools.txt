@@ -1,6 +1,6 @@
 # config/system/tools.txt
 # COSMOS Tools Configuration for DELPHY Deployment
-# Defines tools, their paths, parameters, and default execution settings.
+# Defines tools, paths, parameters, and default execution settings.
 
 # --------------------------------------------
 # GLOBAL TOOL SETTINGS
@@ -10,13 +10,16 @@ DEFAULT_LOGGING_LEVEL: INFO
 DEFAULT_LOGGING_FILE: config/tools/delphy_tool/logs/system_tools.log
 LOGGING_TIMESTAMP_FORMAT: %Y-%m-%d %H:%M:%S
 LOGGING_FORMAT: "[%LEVEL%] %TIMESTAMP% - %TOOL% - %MESSAGE%"
+LOGGING_FILE_ROTATION: DAILY
+LOGGING_MAX_FILE_SIZE: 10MB
+LOGGING_MAX_BACKUP_FILES: 5
 
 # --------------------------------------------
 # TOOL DEFINITIONS
 # --------------------------------------------
 
 TOOL DELPHY_TOOL
-  DESCRIPTION: Main DELPHY Tool for managing connections, commands, and telemetry.
+  DESCRIPTION: Main DELPHY tool for managing connections, commands, telemetry, and diagnostics.
   ENTRY_POINT: config/tools/delphy_tool.rb
   CONFIG_PATH: config/tools/delphy_tool/configs/tool_config.json
   DEFAULT_LOGGING_LEVEL: INFO
@@ -51,7 +54,7 @@ TOOL DELPHY_TEST_RUN
   ENABLED: TRUE
 
 TOOL DELPHY_PROCEDURE_1
-  DESCRIPTION: DELPHY Procedure 1 for executing predefined workflows.
+  DESCRIPTION: DELPHY Procedure 1 for executing primary workflows.
   ENTRY_POINT: config/targets/DELPHY/procedures/delphy_procedure_1.rb
   CONFIG_PATH: config/tools/delphy_tool/configs/tool_defaults.yml
   DEFAULT_LOGGING_LEVEL: INFO
@@ -71,6 +74,13 @@ TOOL DELPHY_LOGGER
   DEFAULT_LOGGING_LEVEL: DEBUG
   ENABLED: TRUE
 
+TOOL DELPHY_CACHE_MANAGER
+  DESCRIPTION: Tool for managing cache and persistence layers for DELPHY telemetry.
+  ENTRY_POINT: scripts/cache_manager.rb
+  CONFIG_PATH: config/tools/delphy_tool/configs/tool_defaults.yml
+  DEFAULT_LOGGING_LEVEL: INFO
+  ENABLED: TRUE
+
 # --------------------------------------------
 # TOOL PARAMETERS
 # --------------------------------------------
@@ -80,9 +90,10 @@ TOOL_PARAMETERS:
   TELEMETRY_TIMEOUT: 5
   ERROR_HANDLING_RETRY: 2
   ALERTS_ENABLED: TRUE
-  ALERT_EMAIL_RECIPIENTS: kolton.dieckow@swri.org, admin@delphy.com
+  ALERT_EMAIL_RECIPIENTS: kolton.dieckow@swri.org, guygrubbs@gmail.com
   CACHE_ENABLED: TRUE
   CACHE_MAX_SIZE: 5000
+  CACHE_EVICTION_POLICY: LRU
 
 # --------------------------------------------
 # ALERT SETTINGS
@@ -91,7 +102,7 @@ ALERTS:
   ENABLED: TRUE
   ALERT_LEVELS: ERROR, CRITICAL
   NOTIFICATION_CHANNELS: EMAIL, CONSOLE
-  ESCALATION_RECIPIENTS: escalation@delphy.com
+  ESCALATION_RECIPIENTS: kolton.dieckow@swri.org, guygrubbs@gmail.com
   EMAIL_TEMPLATE: config/tools/delphy_tool/templates/alert_email_template.txt
 
 # --------------------------------------------
@@ -102,6 +113,7 @@ TOOL_MONITORING:
   MONITOR_INTERVAL: 60
   ALERT_ON_FAILURE: TRUE
   LOG_HEALTH_CHECKS: TRUE
+  TELEMETRY_MONITORING: TRUE
 
 # --------------------------------------------
 # WORKFLOW AUTOMATION
@@ -123,7 +135,7 @@ DIAGNOSTICS:
   SCHEDULED_INTERVAL: DAILY
   RETRY_ATTEMPTS: 2
   ALERT_ON_FAILURE: TRUE
-  EMAIL_RECIPIENTS: diagnostics@delphy.com, support@delphy.com
+  EMAIL_RECIPIENTS: kolton.dieckow@swri.org, guygrubbs@gmail.com
 
 # --------------------------------------------
 # LOG ROTATION SETTINGS
@@ -143,7 +155,7 @@ SESSION:
   IDLE_DISCONNECT: TRUE
 
 # --------------------------------------------
-# TOOL SECURITY
+# SECURITY SETTINGS
 # --------------------------------------------
 SECURITY:
   ENABLE_AUTHENTICATION: TRUE
@@ -159,5 +171,5 @@ SYSTEM_METADATA:
   ENVIRONMENT: "Production"
   VERSION: "1.0.0"
   LAST_UPDATE: "2024-12-30"
-  Maintainer:** DELPHY Operations Team (Guy Grubbs & Kolton Dieckow)
+  MAINTAINER: "DELPHY Operations Team"
   SUPPORT_CONTACT: "kolton.dieckow@swri.org"

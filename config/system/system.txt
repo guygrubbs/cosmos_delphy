@@ -1,12 +1,12 @@
 # config/system/system.txt
 # COSMOS System Configuration for DELPHY Deployment
-# Defines global settings, targets, and operational parameters.
+# Defines global settings, system behavior, and operational parameters.
 
 # --------------------------------------------
 # SYSTEM CONFIGURATION
 # --------------------------------------------
 SYSTEM_NAME: DELPHY_SYSTEM
-DESCRIPTION: COSMOS system configuration for DELPHY integration and management.
+DESCRIPTION: COSMOS deployment for DELPHY telemetry, commands, diagnostics, and workflows.
 
 # --------------------------------------------
 # DEFAULT TARGET SETTINGS
@@ -27,6 +27,7 @@ TELEMETRY_COMPLETE_TIMEOUT: 10
 TELEMETRY_POLLING_INTERVAL: 60
 TELEMETRY_PACKET_SYNC: 0xDEADBEEF
 TELEMETRY_CACHE_SIZE: 1000
+TELEMETRY_RETRY_ATTEMPTS: 2
 
 # --------------------------------------------
 # COMMAND SETTINGS
@@ -55,9 +56,26 @@ LOGGING_FORMAT: "[%LEVEL%] %TIMESTAMP% - %MODULE% - %MESSAGE%"
 ALERTS_ENABLED: TRUE
 ALERT_LEVELS: ERROR, CRITICAL
 ALERT_NOTIFICATION_CHANNELS: EMAIL, CONSOLE
-ALERT_EMAIL_RECIPIENTS: kolton.dieckow@swri.org, admin@delphy.com
+ALERT_EMAIL_RECIPIENTS: kolton.dieckow@swri.org, guygrubbs@gmail.com
+ALERT_ESCALATION_RECIPIENTS: kolton.dieckow@swri.org, guygrubbs@gmail.com
 ALERT_EMAIL_SUBJECT: "DELPHY System Alert"
 ALERT_EMAIL_TEMPLATE: config/tools/delphy_tool/templates/alert_email_template.txt
+
+# --------------------------------------------
+# SESSION SETTINGS
+# --------------------------------------------
+SESSION_TIMEOUT: 1800
+SESSION_IDLE_DISCONNECT: TRUE
+SESSION_AUTO_RECONNECT: TRUE
+
+# --------------------------------------------
+# CACHE SETTINGS
+# --------------------------------------------
+CACHE_ENABLED: TRUE
+CACHE_MAX_SIZE: 5000
+CACHE_EVICTION_POLICY: LRU
+CACHE_FILE: config/tools/delphy_tool/cache/telemetry_cache.dat
+CACHE_PERSISTENCE_ENABLED: TRUE
 
 # --------------------------------------------
 # WORKFLOW SETTINGS
@@ -75,7 +93,7 @@ DIAGNOSTICS_ENABLED: TRUE
 DIAGNOSTICS_INTERVAL: DAILY
 DIAGNOSTICS_RETRY_ATTEMPTS: 2
 DIAGNOSTICS_ALERT_ON_FAILURE: TRUE
-DIAGNOSTICS_EMAIL_RECIPIENTS: diagnostics@delphy.com, support@delphy.com
+DIAGNOSTICS_EMAIL_RECIPIENTS: kolton.dieckow@swri.org, guygrubbs@gmail.com
 
 # --------------------------------------------
 # SYSTEM RESET SETTINGS
@@ -86,27 +104,12 @@ SYSTEM_RESET_TIMEOUT: 15
 SYSTEM_RESET_POST_VALIDATION: TRUE
 
 # --------------------------------------------
-# CACHE SETTINGS
-# --------------------------------------------
-CACHE_ENABLED: TRUE
-CACHE_MAX_SIZE: 5000
-CACHE_EVICTION_POLICY: LRU
-CACHE_FILE: config/tools/delphy_tool/cache/telemetry_cache.dat
-CACHE_PERSISTENCE_ENABLED: TRUE
-
-# --------------------------------------------
-# SESSION SETTINGS
-# --------------------------------------------
-SESSION_TIMEOUT: 1800
-SESSION_IDLE_DISCONNECT: TRUE
-SESSION_AUTO_RECONNECT: TRUE
-
-# --------------------------------------------
 # ERROR HANDLING
 # --------------------------------------------
 ERROR_MAX_RETRY_ATTEMPTS: 3
 ERROR_RETRY_DELAY: 2
 ERROR_ALERT_ON_FAILURE: TRUE
+ERROR_ALERT_LEVELS: ERROR, CRITICAL
 
 # --------------------------------------------
 # MONITORING SETTINGS
@@ -116,6 +119,15 @@ MONITORING_INTERVAL: 60
 MONITORING_ERROR_THRESHOLD: 5
 MONITORING_ALERT_ON_EXCEED: TRUE
 MONITORING_NOTIFICATION_CHANNELS: EMAIL, CONSOLE
+
+# --------------------------------------------
+# SECURITY SETTINGS
+# --------------------------------------------
+SECURITY_ENABLE_AUTHENTICATION: TRUE
+SECURITY_ENABLE_ENCRYPTION: TRUE
+SECURITY_ALLOWED_IPS: 129.162.153.0/24
+SECURITY_LOG_INVALID_ACCESS: TRUE
+SECURITY_ALERT_ON_BREACH: TRUE
 
 # --------------------------------------------
 # MAINTENANCE SETTINGS
@@ -128,60 +140,17 @@ MAINTENANCE_LOG_CLEANUP_INTERVAL: WEEKLY
 MAINTENANCE_MAX_LOG_AGE: 30
 
 # --------------------------------------------
-# SECURITY SETTINGS
-# --------------------------------------------
-SECURITY_ENABLE_AUTHENTICATION: TRUE
-SECURITY_ENABLE_ENCRYPTION: TRUE
-SECURITY_ALLOWED_IPS: 129.162.153.0/24
-SECURITY_LOG_INVALID_ACCESS: TRUE
-SECURITY_ALERT_ON_BREACH: TRUE
-
-# --------------------------------------------
-# MODULE SPECIFIC SETTINGS
-# --------------------------------------------
-MODULE_CONNECTION:
-  DEFAULT: INFO
-  DESCRIPTION: Connection management logging level.
-
-MODULE_COMMANDS:
-  DEFAULT: INFO
-  DESCRIPTION: Command execution logging level.
-
-MODULE_TELEMETRY:
-  DEFAULT: INFO
-  DESCRIPTION: Telemetry monitoring logging level.
-
-MODULE_DIAGNOSTICS:
-  DEFAULT: WARNING
-  DESCRIPTION: Diagnostics logging level.
-
-MODULE_ERROR_HANDLING:
-  DEFAULT: ERROR
-  DESCRIPTION: Error recovery logging level.
-
-MODULE_WORKFLOW:
-  DEFAULT: INFO
-  DESCRIPTION: Workflow automation logging level.
-
-# --------------------------------------------
-# ALERT ESCALATION SETTINGS
-# --------------------------------------------
-ALERT_ESCALATION_ENABLED: TRUE
-ALERT_ESCALATION_LEVELS: CRITICAL
-ALERT_ESCALATION_RECIPIENTS: escalation@delphy.com
-
-# --------------------------------------------
-# SYSTEM METADATA
+# METADATA SETTINGS
 # --------------------------------------------
 SYSTEM_METADATA:
   DEPLOYMENT_ENVIRONMENT: "Production"
   VERSION: "1.0.0"
   LAST_UPDATE: "2024-12-30"
-  Maintainer:** DELPHY Operations Team (Guy Grubbs & Kolton Dieckow)
-  SUPPORT_CONTACT: "kolton.dieckow@swri.org"
+  MAINTAINER: "DELPHY Operations Team"
+  SUPPORT_CONTACT: "support@kolton.dieckow@swri.org"
 
 # --------------------------------------------
-# FINAL VALIDATION SETTINGS
+# VALIDATION SETTINGS
 # --------------------------------------------
 VALIDATION_TELEMETRY: TRUE
 VALIDATION_CONFIGURATION: TRUE

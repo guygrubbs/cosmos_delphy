@@ -91,8 +91,8 @@ diagnostics:
   retry_attempts: 2
   alert_on_failure: true
   alert_recipients:
-    - diagnostics@delphy.com
-    - support@delphy.com
+    - kolton.dieckow@swri.org
+    - kolton.dieckow@swri.org
 
 # --------------------------------------------
 # SYSTEM RESET SETTINGS
@@ -117,7 +117,7 @@ monitoring:
     - console
   email_recipients:
     - kolton.dieckow@swri.org
-    - admin@delphy.com
+    - kolton.dieckow@swri.org
 
 # --------------------------------------------
 # ALERT SETTINGS
@@ -131,7 +131,7 @@ alerts:
     - ERROR
     - CRITICAL
   escalation_recipients:
-    - escalation@delphy.com
+    - kolton.dieckow@swri.org
   default_subject: "DELPHY Tool Alert"
   email_template: "config/tools/delphy_tool/templates/alert_email_template.txt"
 

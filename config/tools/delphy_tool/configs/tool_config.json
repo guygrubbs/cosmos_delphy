@@ -65,7 +65,7 @@
       "default_check_interval": 30,
       "retry_attempts": 2,
       "alert_on_failure": true,
-      "alert_recipients": ["diagnostics@delphy.com", "support@delphy.com"]
+      "alert_recipients": ["kolton.dieckow@swri.org", "kolton.dieckow@swri.org"]
     },
     "system_reset": {
       "default_mode": 0,
@@ -80,13 +80,13 @@
       "error_threshold": 5,
       "alert_on_exceed": true,
       "notification_channels": ["email", "console"],
-      "email_recipients": ["kolton.dieckow@swri.org", "admin@delphy.com"]
+      "email_recipients": ["kolton.dieckow@swri.org", "kolton.dieckow@swri.org"]
     },
     "alerts": {
       "enabled": true,
       "notification_channels": ["email", "console"],
       "levels": ["ERROR", "CRITICAL"],
-      "escalation_recipients": ["escalation@delphy.com"],
+      "escalation_recipients": ["kolton.dieckow@swri.org"],
       "default_subject": "DELPHY Tool Alert",
       "email_template": "config/tools/delphy_tool/templates/alert_email_template.txt"
     },
