@@ -55,7 +55,7 @@ LOGGING_FORMAT: "[%LEVEL%] %TIMESTAMP% - %MODULE% - %MESSAGE%"
 ALERTS_ENABLED: TRUE
 ALERT_LEVELS: ERROR, CRITICAL
 ALERT_NOTIFICATION_CHANNELS: EMAIL, CONSOLE
-ALERT_EMAIL_RECIPIENTS: ops_team@delphy.com, admin@delphy.com
+ALERT_EMAIL_RECIPIENTS: kolton.dieckow@swri.org, admin@delphy.com
 ALERT_EMAIL_SUBJECT: "DELPHY System Alert"
 ALERT_EMAIL_TEMPLATE: config/tools/delphy_tool/templates/alert_email_template.txt
 
@@ -177,8 +177,8 @@ SYSTEM_METADATA:
   DEPLOYMENT_ENVIRONMENT: "Production"
   VERSION: "1.0.0"
   LAST_UPDATE: "2024-12-30"
-  MAINTAINER: "DELPHY Operations Team"
-  SUPPORT_CONTACT: "support@delphy.com"
+  Maintainer:** DELPHY Operations Team (Guy Grubbs & Kolton Dieckow)
+  SUPPORT_CONTACT: "kolton.dieckow@swri.org"
 
 # --------------------------------------------
 # FINAL VALIDATION SETTINGS

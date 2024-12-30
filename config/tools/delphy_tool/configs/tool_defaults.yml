@@ -116,7 +116,7 @@ monitoring:
     - email
     - console
   email_recipients:
-    - ops_team@delphy.com
+    - kolton.dieckow@swri.org
     - admin@delphy.com
 
 # --------------------------------------------

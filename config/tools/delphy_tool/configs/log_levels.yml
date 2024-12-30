@@ -75,5 +75,5 @@ alerts:
     - CRITICAL
   notification_channel: email
   email_recipients:
-    - ops_team@delphy.com
+    - kolton.dieckow@swri.org
     - admin@delphy.com

@@ -80,7 +80,7 @@ MODULE WORKFLOW
 # --------------------------------------------
 ALERTS_ENABLED: TRUE
 ALERT_NOTIFICATION_CHANNELS: EMAIL, CONSOLE
-ALERT_EMAIL_RECIPIENTS: ops_team@delphy.com, admin@delphy.com
+ALERT_EMAIL_RECIPIENTS: kolton.dieckow@swri.org, admin@delphy.com
 ALERT_ESCALATION_RECIPIENTS: escalation@delphy.com
 ALERT_ESCALATION_LEVELS: CRITICAL
 
@@ -210,5 +210,5 @@ TARGET_METADATA:
   ENVIRONMENT: "Production"
   VERSION: "1.0.0"
   LAST_UPDATE: "2024-12-30"
-  MAINTAINER: "DELPHY Operations Team"
-  SUPPORT_CONTACT: "support@delphy.com"
+  Maintainer:** DELPHY Operations Team (Guy Grubbs & Kolton Dieckow)
+  SUPPORT_CONTACT: "kolton.dieckow@swri.org"

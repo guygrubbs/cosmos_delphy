@@ -174,7 +174,7 @@ Alerts are triggered for the following events:
 - **CRITICAL:** System failures.  
 
 Alerts are sent via:
-- **Email:** `ops_team@delphy.com`  
+- **Email:** `kolton.dieckow@swri.org`  
 - **Console Notifications**  
 
 ---
@@ -214,7 +214,7 @@ ruby config/procedures/delphy_validation_procedure.rb
 
 ## **10. Support**
 
-- **Operations Team:** [ops_team@delphy.com](mailto:ops_team@delphy.com)  
+- **Operations Team:** [kolton.dieckow@swri.org](mailto:kolton.dieckow@swri.org)  
 - **Support Team:** [support@delphy.com](mailto:support@delphy.com)  
 
 ---

@@ -80,7 +80,7 @@
       "error_threshold": 5,
       "alert_on_exceed": true,
       "notification_channels": ["email", "console"],
-      "email_recipients": ["ops_team@delphy.com", "admin@delphy.com"]
+      "email_recipients": ["kolton.dieckow@swri.org", "admin@delphy.com"]
     },
     "alerts": {
       "enabled": true,
