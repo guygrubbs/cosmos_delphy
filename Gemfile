@@ -1,9 +1,9 @@
-# Gemfile for COSMOS v4 Deployment with Ruby 2.5
+# Gemfile for COSMOS v4 Deployment with Ruby 2.5.x
 
 source 'https://rubygems.org'
 
 # Define Ruby Version
-ruby '2.5.0'
+ruby '~> 2.5.0'
 
 # COSMOS Framework
 gem 'cosmos', '4.5.2'
