@@ -1,47 +1,41 @@
-# Gemfile for DELPHY COSMOS v4 Deployment
-# Ensures compatibility with COSMOS v4 and Ruby 2.7.x
+# Gemfile for COSMOS v4 Deployment with Ruby 2.5
 
 source 'https://rubygems.org'
 
-# --------------------------------------------
-# COSMOS Core Dependencies
-# --------------------------------------------
-gem 'cosmos', '~> 4.0'    # COSMOS framework version 4.x
-gem 'qtbindings', '~> 4.8' # Required for GUI components in COSMOS tools
-gem 'json', '~> 2.6'       # JSON library for configuration and telemetry parsing
-gem 'logger', '~> 1.6'     # Standard Ruby logger with enhancements
+# Define Ruby Version
+ruby '2.5.0'
 
-# --------------------------------------------
-# Development and Debugging Tools
-# --------------------------------------------
-gem 'pry', '~> 0.14'       # Interactive Ruby shell for debugging
-gem 'rspec', '~> 3.12'     # Testing framework for unit and integration tests
-gem 'rubocop', '~> 1.40'   # Ruby linter for consistent code style
+# COSMOS Framework
+gem 'cosmos', '4.5.2'
 
-# --------------------------------------------
-# Networking and Communication
-# --------------------------------------------
-gem 'net-telnet', '~> 0.2' # Networking library for TCP/IP communication
-gem 'faraday', '~> 1.10'   # HTTP client for telemetry or REST integrations
+# Logging and Utilities
+gem 'logger'
+gem 'json'
 
-# --------------------------------------------
-# Security and Environment Management
-# --------------------------------------------
-gem 'dotenv', '~> 2.8'     # Environment variable management for secure credentials
+# Testing Framework
+gem 'rspec', '~> 3.12'
+gem 'rspec-core', '~> 3.12'
+gem 'rspec-expectations', '~> 3.12'
+gem 'rspec-mocks', '~> 3.12'
 
-# --------------------------------------------
+# GUI Dependencies
+gem 'qtbindings', '~> 4.8.6.5'
+
+# Code Quality
+gem 'rubocop', '~> 1.12.1'
+
 # Additional Utilities
-# --------------------------------------------
-gem 'fileutils', '~> 1.7'  # File and directory manipulation utilities
-gem 'highline', '~> 2.0'   # Command-line interface enhancements
+gem 'fileutils'
 
-# --------------------------------------------
-# Compatibility Specifications
-# --------------------------------------------
-# Specify the compatible Ruby version
-ruby '2.7.8'
+# Bundler Version
+gem 'bundler', '1.17.3'
 
-# --------------------------------------------
-# Clean-up
-# --------------------------------------------
-# Removed any outdated or unnecessary dependencies
+# Documentation
+group :development do
+  gem 'yard'
+end
+
+# Testing Tools
+group :test do
+  gem 'simplecov', '~> 0.21.2'
+end

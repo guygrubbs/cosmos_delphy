@@ -1,6 +1,6 @@
-# CI/CD Pipeline for COSMOS Deployment
+# CI/CD Pipeline for COSMOS v4 Deployment
 
-name: COSMOS CI/CD Pipeline
+name: COSMOS v4 CI/CD Pipeline
 
 on:
   push:
@@ -30,11 +30,6 @@ jobs:
         run: |
           docker push ghcr.io/guygrubbs/cosmos_delphy:latest
 
-      - name: Verify Docker Image
-        run: |
-          docker pull ghcr.io/guygrubbs/cosmos_delphy:latest
-          docker run --rm ghcr.io/guygrubbs/cosmos_delphy:latest echo "✅ Docker Image Built Successfully"
-
   setup:
     name: Environment Setup
     runs-on: ubuntu-latest
@@ -52,7 +47,7 @@ jobs:
 
       - name: Install Ruby Dependencies
         run: |
-          bundle install --jobs=4 --retry=3
+          bundle _1.17.3_ install --jobs=4 --retry=3
 
   lint:
     name: Lint Code
@@ -93,7 +88,6 @@ jobs:
     needs: [lint, unit_tests, integration_tests]
     container:
       image: ghcr.io/guygrubbs/cosmos_delphy:latest
-    if: github.ref == 'refs/heads/main'
 
     steps:
       - name: Execute Deployment Script
@@ -102,13 +96,4 @@ jobs:
           ./deploy.sh
 
       - name: Validate Logs
-        run: tail -n 50 /app/config/targets/DELPHY/tools/logs/*.log
-
-  finalize:
-    name: Finalization
-    runs-on: ubuntu-latest
-    needs: deployment
-
-    steps:
-      - name: Deployment Success
-        run: echo "✅ Deployment Completed Successfully"
+        run: tail -n 50 /cosmos/config/targets/DELPHY/tools/logs/*.log

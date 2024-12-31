@@ -1,55 +1,65 @@
-# Dockerfile for COSMOS Deployment with Flexible Dependency Management
+# Dockerfile for COSMOS v4 Deployment with Ruby 2.5 and Ubuntu 18.04
 
-# Use the latest LTS Ubuntu version
-FROM ubuntu:22.04
+FROM ubuntu:18.04
 
-# Set environment variables
+# Set Environment Variables
 ENV DEBIAN_FRONTEND=noninteractive
+ENV COSMOS_VERSION=4.5.2
 ENV LANG=C.UTF-8
 ENV LC_ALL=C.UTF-8
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    build-essential \
+# Install System Dependencies
+RUN apt-get update -y && apt-get install -y \
     cmake \
-    pkg-config \
-    qtbase5-dev \
-    qtchooser \
-    qt5-qmake \
-    qtbase5-dev-tools \
-    libqt5widgets5 \
-    ruby-full \
-    ruby-dev \
-    bundler \
+    freeglut3 \
+    freeglut3-dev \
+    gcc \
+    g++ \
     git \
-    curl \
-    libfontconfig1-dev \
-    libfreetype6-dev \
-    libx11-dev \
-    libxext-dev \
-    libxfixes-dev \
-    libxrender-dev \
-    libxcb1-dev \
-    libxcb-glx0-dev \
+    iproute2 \
+    libffi-dev \
+    libgdbm-dev \
+    libgdbm5 \
+    libgstreamer-plugins-base1.0-dev \
+    libgstreamer1.0-dev \
+    libncurses5-dev \
+    libreadline6-dev \
+    libsmokeqt4-dev \
+    libssl-dev \
+    libyaml-dev \
+    net-tools \
+    qt4-default \
+    qt4-dev-tools \
+    ruby2.5 \
+    ruby2.5-dev \
+    vim \
+    zlib1g-dev \
     && apt-get clean
 
-# Verify system dependencies
+# Set Default Ruby Version
+RUN update-alternatives --install /usr/bin/ruby ruby /usr/bin/ruby2.5 1
+RUN update-alternatives --set ruby /usr/bin/ruby2.5
+
+# Install Bundler
+RUN gem install bundler -v 1.17.3 --no-document
+
+# Install COSMOS
+RUN gem install cosmos -v ${COSMOS_VERSION} --no-document
+
+# Set Working Directory
+WORKDIR /cosmos
+
+# Copy Application Files
+COPY . /cosmos
+
+# Install Ruby Dependencies
+RUN bundle _1.17.3_ install --jobs=4 --retry=3
+
+# Validate Installation
 RUN ruby -v && bundler -v && cmake --version && qmake --version
 
-# Set working directory
-WORKDIR /app
+# Expose Default COSMOS Port (if required)
+EXPOSE 2900
 
-# Copy application files
-COPY . /app
-
-# Install Ruby gems using Bundler
-RUN bundle install --jobs=4 --retry=3
-
-# Validate installation
-RUN ruby -v && bundler -v && rspec --version
-
-# Expose any necessary ports (if applicable)
-EXPOSE 8080
-
-# Default command
-CMD ["/bin/bash"]
+# Start COSMOS Launcher
+CMD ["ruby", "Launcher"]
