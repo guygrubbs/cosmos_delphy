@@ -1,4 +1,4 @@
-# Dockerfile for COSMOS v4 Deployment with Ruby 2.5.x and Ubuntu 18.04
+# Dockerfile for COSMOS v4 Deployment with Ruby 2.5 and Ubuntu 18.04
 
 FROM ubuntu:18.04
 
