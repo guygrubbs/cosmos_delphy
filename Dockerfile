@@ -1,15 +1,14 @@
-# Dockerfile for COSMOS v4 Deployment with Ruby 2.5.x and Ubuntu 18.04
-
+# Use Ubuntu 18.04 as the base image
 FROM ubuntu:18.04
 
-# Set Environment Variables
-ENV DEBIAN_FRONTEND=noninteractive
+# Set environment variables
 ENV COSMOS_VERSION=4.5.2
-ENV LANG=C.UTF-8
-ENV LC_ALL=C.UTF-8
+ENV APP_HOME=/cosmos
+ENV DEBIAN_FRONTEND=noninteractive
 
 # Install System Dependencies
 RUN apt-get update -y && apt-get install -y \
+    build-essential \
     cmake \
     freeglut3 \
     freeglut3-dev \
@@ -30,46 +29,49 @@ RUN apt-get update -y && apt-get install -y \
     net-tools \
     qt4-default \
     qt4-dev-tools \
+    libqt4-opengl-dev \
     ruby2.5 \
     ruby2.5-dev \
-    rake \
+    x11-apps \
+    xvfb \
     vim \
     zlib1g-dev \
     && apt-get clean
 
-# Set Default Ruby Version
-RUN update-alternatives --install /usr/bin/ruby ruby /usr/bin/ruby2.5 1
-RUN update-alternatives --set ruby /usr/bin/ruby2.5
+# Install Ruby Gems and COSMOS
+RUN gem install rake --no-document && \
+    gem install bundler -v 1.17.3 --no-document && \
+    gem install cosmos -v ${COSMOS_VERSION} --no-document
 
-# Install Bundler
-RUN gem install bundler -v 1.17.3 --no-document
+# Create a dedicated user for COSMOS
+RUN groupadd -r appuser && useradd -r -g appuser appuser
+RUN mkdir -p ${APP_HOME} && chown -R appuser:appuser ${APP_HOME}
 
-# Install Rake Explicitly
-RUN gem install rake -v 12.3.1 --no-document
+# Switch to non-root user
+USER appuser
 
-# Verify Ruby and Gems
-RUN ruby -v && bundler -v && rake --version
-
-# Install COSMOS
-RUN gem install cosmos -v ${COSMOS_VERSION} --no-document || \
-    (echo "Retrying COSMOS installation after Rake re-setup" && \
-    gem install rake -v 12.3.1 --no-document && \
-    gem install cosmos -v ${COSMOS_VERSION} --no-document)
+# Initialize COSMOS demo environment if not already present
+RUN if [ ! -d "${APP_HOME}/config" ]; then \
+      cosmos demo ${APP_HOME}; \
+    fi
 
 # Set Working Directory
-WORKDIR /cosmos
+WORKDIR ${APP_HOME}
 
-# Copy Application Files
-COPY . /cosmos
+# Xvfb - Virtual X Server Setup
+# - Starts an X11 display on :99 in the background
+# - Allows graphical applications to run without a physical display
+RUN echo '#!/bin/bash\n\
+Xvfb :99 -screen 0 1024x768x24 &\n\
+export DISPLAY=:99\n\
+exec "$@"' > /entrypoint.sh && chmod +x /entrypoint.sh
 
-# Install Ruby Dependencies
-RUN bundle _1.17.3_ install --jobs=4 --retry=3
+# Validate installation
+RUN ruby -v && cosmos --version
 
-# Validate Installation
-RUN ruby -v && bundler -v && rake --version && cmake --version && qmake --version
+# Expose COSMOS default ports
+EXPOSE 2900 2901 2902
 
-# Expose Default COSMOS Port (if required)
-EXPOSE 2900
-
-# Start COSMOS Launcher
+# Set Entry Point
+ENTRYPOINT ["/entrypoint.sh"]
 CMD ["ruby", "Launcher"]

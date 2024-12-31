@@ -30,6 +30,9 @@ gem 'fileutils'
 # Bundler Version
 gem 'bundler', '1.17.3'
 
+# Build and Deployment Tools
+gem 'rake', '13.0.6'
+
 # Documentation
 group :development do
   gem 'yard'
