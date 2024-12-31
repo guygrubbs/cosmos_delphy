@@ -63,7 +63,7 @@ WORKDIR /cosmos
 COPY . /cosmos
 
 # Install Ruby Dependencies
-RUN bundle _1.17.3_ install --jobs=4 --retry=3
+RUN bundle _1.17.3_ install --jobs=4 --retry=4
 
 # Validate Installation
 RUN ruby -v && bundler -v && rake --version && cmake --version && qmake --version
