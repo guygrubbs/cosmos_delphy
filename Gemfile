@@ -1,4 +1,4 @@
-# Gemfile for COSMOS v4 Deployment with Ruby 2.5.x
+# Gemfile for COSMOS v4 Deployment with Ruby 2.5.*
 
 source 'https://rubygems.org'
 
