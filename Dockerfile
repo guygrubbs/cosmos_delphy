@@ -1,77 +1,55 @@
-# Use Ubuntu 18.04 as the base image
+# Use a base Ubuntu image
 FROM ubuntu:18.04
 
-# Set environment variables
+# Set Environment Variables
 ENV COSMOS_VERSION=4.5.2
 ENV APP_HOME=/cosmos
-ENV DEBIAN_FRONTEND=noninteractive
+ENV DISPLAY=:99
 
 # Install System Dependencies
-RUN apt-get update -y && apt-get install -y \
+RUN apt-get update && apt-get install -y \
     build-essential \
     cmake \
-    freeglut3 \
-    freeglut3-dev \
-    gcc \
-    g++ \
-    git \
-    iproute2 \
-    libffi-dev \
-    libgdbm-dev \
-    libgdbm5 \
-    libgstreamer-plugins-base1.0-dev \
-    libgstreamer1.0-dev \
-    libncurses5-dev \
-    libreadline6-dev \
-    libsmokeqt4-dev \
-    libssl-dev \
-    libyaml-dev \
-    net-tools \
+    pkg-config \
     qt4-default \
     qt4-dev-tools \
+    libqt4-dev \
     libqt4-opengl-dev \
     ruby2.5 \
     ruby2.5-dev \
-    x11-apps \
+    bundler \
+    git \
+    curl \
+    libfontconfig1-dev \
+    libfreetype6-dev \
+    libx11-dev \
+    libxext-dev \
+    libxfixes-dev \
+    libxrender-dev \
+    libxcb1-dev \
+    libxcb-glx0-dev \
     xvfb \
-    vim \
-    zlib1g-dev \
     && apt-get clean
 
-# Install Ruby Gems and COSMOS
-RUN gem install rake --no-document && \
-    gem install bundler -v 1.17.3 --no-document && \
-    gem install cosmos -v ${COSMOS_VERSION} --no-document
+# Install Ruby Gems
+RUN gem install bundler -v 1.17.3 --no-document
 
-# Create a dedicated user for COSMOS
-RUN groupadd -r appuser && useradd -r -g appuser appuser
-RUN mkdir -p ${APP_HOME} && chown -R appuser:appuser ${APP_HOME}
+# Create Application Directory
+WORKDIR ${APP_HOME}
 
-# Switch to non-root user
-USER appuser
+# Install Ruby Dependencies
+RUN bundle _1.17.3_ install --jobs=4 --retry=3
 
-# Initialize COSMOS demo environment if not already present
-RUN if [ ! -d "${APP_HOME}/config" ]; then \
-      cosmos demo ${APP_HOME}; \
-    fi
+# Install COSMOS
+RUN gem install cosmos -v ${COSMOS_VERSION} --no-document
+
+# Ensure /cosmos does not pre-exist and create a fresh one
+RUN if [ -d "${APP_HOME}" ]; then rm -rf ${APP_HOME}; fi && \
+    mkdir -p ${APP_HOME} && \
+    cosmos demo ${APP_HOME}
 
 # Set Working Directory
 WORKDIR ${APP_HOME}
 
-# Xvfb - Virtual X Server Setup
-# - Starts an X11 display on :99 in the background
-# - Allows graphical applications to run without a physical display
-RUN echo '#!/bin/bash\n\
-Xvfb :99 -screen 0 1024x768x24 &\n\
-export DISPLAY=:99\n\
-exec "$@"' > /entrypoint.sh && chmod +x /entrypoint.sh
-
-# Validate installation
-RUN ruby -v && cosmos --version
-
-# Expose COSMOS default ports
-EXPOSE 2900 2901 2902
-
-# Set Entry Point
-ENTRYPOINT ["/entrypoint.sh"]
-CMD ["ruby", "Launcher"]
+# Start Xvfb and run Launcher
+CMD ["bash", "-c", "Xvfb :99 -screen 0 1024x768x24 & export DISPLAY=:99 && ruby Launcher"]
