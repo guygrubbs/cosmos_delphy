@@ -32,6 +32,7 @@ RUN apt-get update -y && apt-get install -y \
     qt4-dev-tools \
     ruby2.5 \
     ruby2.5-dev \
+    rake \
     vim \
     zlib1g-dev \
     && apt-get clean
@@ -43,8 +44,17 @@ RUN update-alternatives --set ruby /usr/bin/ruby2.5
 # Install Bundler
 RUN gem install bundler -v 1.17.3 --no-document
 
+# Install Rake Explicitly
+RUN gem install rake -v 12.3.1 --no-document
+
+# Verify Ruby and Gems
+RUN ruby -v && bundler -v && rake --version
+
 # Install COSMOS
-RUN gem install cosmos -v ${COSMOS_VERSION} --no-document
+RUN gem install cosmos -v ${COSMOS_VERSION} --no-document || \
+    (echo "Retrying COSMOS installation after Rake re-setup" && \
+    gem install rake -v 12.3.1 --no-document && \
+    gem install cosmos -v ${COSMOS_VERSION} --no-document)
 
 # Set Working Directory
 WORKDIR /cosmos
@@ -56,7 +66,7 @@ COPY . /cosmos
 RUN bundle _1.17.3_ install --jobs=4 --retry=3
 
 # Validate Installation
-RUN ruby -v && bundler -v && cmake --version && qmake --version
+RUN ruby -v && bundler -v && rake --version && cmake --version && qmake --version
 
 # Expose Default COSMOS Port (if required)
 EXPOSE 2900

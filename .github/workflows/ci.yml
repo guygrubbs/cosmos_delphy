@@ -42,6 +42,7 @@ jobs:
         run: |
           ruby -v
           bundler -v
+          rake --version
           cmake --version
           qmake --version
 
