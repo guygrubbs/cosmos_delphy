@@ -1,4 +1,4 @@
-# Dockerfile for COSMOS v4 Deployment with Ruby 2.5 and Ubuntu 18.04
+# Dockerfile for COSMOS v4 Deployment with Ruby 2.5.x and Ubuntu 18.04
 
 FROM ubuntu:18.04
 
@@ -63,7 +63,7 @@ WORKDIR /cosmos
 COPY . /cosmos
 
 # Install Ruby Dependencies
-RUN bundle _1.17.3_ install --jobs=4 --retry=4
+RUN bundle _1.17.3_ install --jobs=4 --retry=3
 
 # Validate Installation
 RUN ruby -v && bundler -v && rake --version && cmake --version && qmake --version
