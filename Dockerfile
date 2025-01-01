@@ -36,6 +36,7 @@ RUN apt-get update -y && apt-get install -y \
 ENV COSMOS_VERSION=4.5.2
 
 RUN gem install rake --no-document
+RUN gem install rspec --no-document
 RUN gem install bundler -v 1.17.3
 RUN gem install cosmos -v ${COSMOS_VERSION} --no-document
 RUN cosmos demo /cosmos
