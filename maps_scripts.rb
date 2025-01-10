@@ -1232,7 +1232,118 @@ def full_sweep_auto(i_min, i_max, i_step,
   puts "AUTO FULL SWEEP COMPLETE."
 end
 
+# Similar function for the outer rotation script
+def outer_rotation_cmd(angle)
+  # e.g. "run('outer_rotation_script[45]')"
+  unpadded = "run('outer_rotation_script[#{angle}]')"
 
+  desired_len = 44
+  if unpadded.size < desired_len
+    padded_str = unpadded.ljust(desired_len, ' ')
+  else
+    raise "Command string exceeded 44 chars (#{unpadded.size}). Increase LENGTH or shorten the string."
+  end
+
+  cmd("DELPHY RUN_SCRIPT with SYNC 3735928559, \
+                           PKT_TYPE 6, \
+                           PKT_ID 0, \
+                           SESSION_TIME 0, \
+                           PACKET_TIME 0, \
+                           LENGTH 48, \
+                           STRING_LENGTH 44, \
+                           COMMAND_NAME '#{padded_str}'")
+end
+
+def full_sweep_auto(i_min, i_max, i_step,
+                      o_min, o_max, o_step,
+                      e_min, e_max, e_step,
+                      d_min, d_max, d_step,
+                      delay)
+  puts "AUTO SWEEP STARTED:"
+  puts "  Inner rotation from #{i_min}..#{i_max}, step=#{i_step}"
+  puts "  Outer rotation from #{o_min}..#{o_max}, step=#{o_step}"
+  puts "  ESA/Def sweeps from ESA=#{e_min}..#{e_max}, Def=#{d_min}..#{d_max}, step=#{e_step}/#{d_step}"
+  puts "  Using delay of #{delay} second(s) between steps."
+
+  # Loop over INNER rotation
+  inner_rot = i_min
+  loop do
+    # Command the inner rotation
+    puts "Setting INNER rotation to #{inner_rot}"
+    inner_rotation_cmd(inner_rot)  # Calls your function that sends the cmd
+    wait(delay)                    # Allow hardware to settle
+
+    # Loop over OUTER rotation
+    outer_rot = o_min
+    loop do
+      # Command the outer rotation
+      puts "Setting OUTER rotation to #{outer_rot}"
+      outer_rotation_cmd(outer_rot)  # Calls your function that sends the cmd
+      wait(delay)
+
+      # Now run the ESA/Deflector sweep at this inner & outer angle
+      esa_def_sweep(e_min, e_max, e_step, d_min, d_max, d_step, delay)
+
+      # Increment outer rotation
+      break if outer_rot >= o_max
+      outer_rot += o_step
+      wait(delay)
+    end
+
+    # Increment inner rotation
+    break if inner_rot >= i_max
+    inner_rot += i_step
+    wait(delay)
+  end
+
+  puts "AUTO FULL SWEEP COMPLETE."
+end
+
+
+def inner_rotation_cmd(angle)
+  # 1) Build the command string dynamically
+  command_str = "run('inner_rotation_script[#{angle}]')"
+
+  # 2) Calculate the string length
+  str_len = command_str.size
+  
+  # 3) Calculate total packet LENGTH by adding overhead
+  #    For example, if your previous example had 48 - 44 = 4 bytes overhead
+  overhead = 4
+  total_length = str_len + overhead
+
+  # 4) Call the cmd(...) with dynamically computed LENGTH and STRING_LENGTH
+  cmd("DELPHY RUN_SCRIPT with SYNC 3735928559, \
+                           PKT_TYPE 6, \
+                           PKT_ID 0, \
+                           SESSION_TIME 0, \
+                           PACKET_TIME 0, \
+                           LENGTH #{total_length}, \
+                           STRING_LENGTH #{str_len}, \
+                           COMMAND_NAME '#{command_str}'")
+end
+
+def outer_rotation_cmd(angle)
+  # 1) Build the command string
+  command_str = "run('outer_rotation_script[#{angle}]')"
+
+  # 2) Calculate the string length
+  str_len = command_str.size
+
+  # 3) Overhead (same logic as above)
+  overhead = 4
+  total_length = str_len + overhead
+
+  # 4) Build and send
+  cmd("DELPHY RUN_SCRIPT with SYNC 3735928559, \
+                           PKT_TYPE 6, \
+                           PKT_ID 0, \
+                           SESSION_TIME 0, \
+                           PACKET_TIME 0, \
+                           LENGTH #{total_length}, \
+                           STRING_LENGTH #{str_len}, \
+                           COMMAND_NAME '#{command_str}'")
+end
 
 
 # --------------------------------------------------------------------
